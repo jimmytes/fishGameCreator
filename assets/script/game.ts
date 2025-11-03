@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Prefab, instantiate, PhysicsSystem2D, v2, Vec2, UITransform, Sprite, EventTouch } from 'cc';
+import { _decorator, Component, Node, Prefab, instantiate, PhysicsSystem2D, v2, Vec2, Vec3, UITransform, Sprite, EventTouch, log } from 'cc';
 import { Data } from './DataController';
 import { EventController } from './EventController';
 
@@ -14,15 +14,30 @@ export class game extends Component {
     @property(Prefab)
     bulletPrefab: Prefab = null;
     @property(Node)
+    bulletNode: Node = null;
+    @property(Node)
     waveSprite: Node = null;
+    @property(Node)
+    targetNode: Node = null;
     private fish = null;
-    private fishArray = [];
     private bullet = null;
     private wavePos = new Vec2(-640,360);
     private clickFlag = false;
     private clickTime = 0;
-    
+    private clickGapFlag = false;
+    private clickGapTime = 0;
     start() {
+        PhysicsSystem2D.instance.enable = true;
+        PhysicsSystem2D.instance.gravity = v2(0, 0);    
+        const system = PhysicsSystem2D.instance;
+        // 物理步长，默认 fixedTimeStep 是 1/60
+        system.fixedTimeStep = 1/60;
+        
+        // 每次更新物理系统处理速度的迭代次数，默认为 10
+        system.velocityIterations = 8;
+        
+        // 每次更新物理系统处理位置的迭代次数，默认为 10
+        system.positionIterations = 8;
         this.initFish();
         this.waveSprite.setPosition(-640,360)
     }
@@ -35,38 +50,30 @@ export class game extends Component {
     }
 
     update(deltaTime: number) {
-        this.runFish(deltaTime);
         this.runWave();
         if(this.clickFlag == true){
             this.clickTime += deltaTime;
-            if(this.clickTime >= 0.1){
-                console.log("1111111")
+            if(this.clickTime >= Data.game.Bullet_Gap_Time){
                 this.createBullet(nowMousePos);
-
                 this.clickTime = 0;
+            }
+        }
+
+        if(this.clickGapFlag == true){
+            this.clickGapTime += deltaTime;
+            if(this.clickGapTime >= Data.game.Bullet_Gap_Time){    
+                this.clickGapFlag = false;
+                this.clickGapTime = 0;
             }
         }
     }
 
     initFish(){
         for(let i = 0; i < Data.game.Total_Fish; i++){
-            let random_fish = Math.floor(Math.random() * Data.FishInfo.fish.length);
-            random_fish = 0
-            let random_angle = Math.floor(Math.random() * 361);
-            let radius = random_angle * Math.PI / 180;
-            let direction = new Vec2(Math.cos(radius),Math.sin(radius));
+            let random_fish = this.weightedPick(Data.FishInfo.fish);
             this.fish = instantiate(this.fishPrefab);
-            this.fish.getComponent("fish").setFishSprite(random_fish);
-            this.fish.setPosition(Math.floor(Math.random() * Data.game.Screen_Width) - (Data.game.Screen_Width / 2),Math.floor(Math.random() * Data.game.Screen_Height) - (Data.game.Screen_Height / 2));
-            this.fish.angle = random_angle;
-            this.fish.direction = direction;
-            this.fish.speed = 1;
-            this.fish.x = this.fish.getPosition().x;
-            this.fish.y = this.fish.getPosition().y;
-            this.fish.w = this.fish.getComponent(UITransform).width;
-            this.fish.h = this.fish.getComponent(UITransform).height;
+            this.fish.getComponent("fish").setData(random_fish);
             this.fishNode.addChild(this.fish);
-            this.fishArray.push(this.fish);
         }
     }
 
@@ -84,47 +91,31 @@ export class game extends Component {
 
     }
 
-    runFish(deltaTime){
-        this.fishArray.forEach(function(item,index){
-            item.x -= item.direction.x * item.speed;
-            item.y -= item.direction.y * item.speed;
-            item.setPosition(item.x,item.y);
-            if(item.x > (Data.game.Screen_Width / 2) + item.w){
-                item.x = -(Data.game.Screen_Width / 2) - item.w
-            }
-
-            if(item.x < -(Data.game.Screen_Width / 2) - item.w){
-                item.x = (Data.game.Screen_Width / 2) + item.w
-            }
-
-            if(item.y > (Data.game.Screen_Height / 2) + item.h){
-                item.y = -(Data.game.Screen_Height / 2) - item.h
-            }
-
-            if(item.y < -(Data.game.Screen_Height / 2) - item.h){
-                item.y = (Data.game.Screen_Height / 2) + item.h
-            }
-        })
-    }
-
     onTouchStart(event: EventTouch) {
         const worldPos = event.getUILocation();
-        console.log('開始世界座標:', worldPos);
+        //log('開始世界座標:', worldPos);
         this.clickFlag = true;
+        this.targetNode.active = true;
+        
     }
 
     onTouchMove(event: EventTouch) {
         const worldPos = event.getUILocation();
-        console.log('移動世界座標:', worldPos);
+        //console.log('移動世界座標:', worldPos);
         nowMousePos = worldPos;
+        this.targetNode.setPosition(worldPos.x - (Data.game.Screen_Width / 2),worldPos.y - (Data.game.Screen_Height / 2))
     }
 
     onTouchEnd(event: EventTouch) {
         const worldPos = event.getUILocation();
-        console.log('結束世界座標:', worldPos);
-        this.createBullet(worldPos);
+        //log('結束世界座標:', worldPos);
+        if(this.clickGapFlag == false){
+            this.createBullet(worldPos);
+        }
         this.clickFlag = false;
         this.clickTime = 0;
+        this.clickGapFlag = true;
+        this.targetNode.active = false;
     }
 
     onTouchCancel(event: EventTouch) {
@@ -132,6 +123,7 @@ export class game extends Component {
         console.log('取消世界座標:', worldPos);
         this.clickFlag = false;
         this.clickTime = 0;
+        this.targetNode.active = false;
     }
 
     createBullet(worldPos){
@@ -150,9 +142,17 @@ export class game extends Component {
             vx : (dx / length) * 15,
             vy : (dy / length) * 15
         }
-        this.node.addChild(this.bullet);
+        this.bulletNode.addChild(this.bullet);
         this.bullet.getComponent("bullet").setData(msg)
-        // EventController.sendEvent("create_bullet",msg)
     }
+
+    weightedPick(list) {
+        const total = list.reduce((sum, obj) => sum + obj.weight, 0);
+        let rand = Math.random() * total;
+        for (const obj of list) {
+          if (rand < obj.weight) return obj.id;
+          rand -= obj.weight;
+        }
+   }
 }
 

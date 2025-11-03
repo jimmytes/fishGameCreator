@@ -1,5 +1,6 @@
 import { _decorator, Component, Node, Sprite, Collider2D, Contact2DType, IPhysics2DContact, log, tween, Vec3} from 'cc';
 import { EventController } from './EventController';
+import { Data } from './DataController';
 
 const { ccclass, property } = _decorator;
 
@@ -27,12 +28,13 @@ export class bullet extends Component {
     }
 
     onBeginContact (selfCollider: Collider2D, otherCollider: Collider2D, contact: IPhysics2DContact | null) {
-        console.log("被撞到的是：", selfCollider.node.name,"撞他的是:",otherCollider.node.name);
+        //console.log("被撞到的是：", selfCollider.node.name,"撞他的是:",otherCollider.node.name);
+        if(otherCollider.node.name == "bullet_sprite")return;
         this.create_flag = false;
         this.bulletNode.active = false;
         this.hitEffectNode.active = true;
         tween(this.hitEffectNode)
-        .to(0.1, { scale: new Vec3(1.3, 1.3, 1)})
+        .to(0.1, { scale: new Vec3(1.1, 1.1, 1)})
         .to(0.1, { scale: new Vec3(1, 1, 1)})
         .call(() => {
             this.node.destroy();
@@ -49,8 +51,8 @@ export class bullet extends Component {
 
     moveBullet(){
         let nowPos = this.node.getPosition();
-        nowPos.x += this.vx;
-        nowPos.y += this.vy;
+        nowPos.x += this.vx * Data.game.Bullet_Speed;
+        nowPos.y += this.vy * Data.game.Bullet_Speed;
         this.node.setPosition(nowPos.x,nowPos.y)
     }
 }
