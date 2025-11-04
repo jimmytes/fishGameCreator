@@ -19,6 +19,9 @@ export class game extends Component {
     waveSprite: Node = null;
     @property(Node)
     targetNode: Node = null;
+    @property([Node])
+    public players: Node[] = [];
+    
     private fish = null;
     private bullet = null;
     private wavePos = new Vec2(-640,360);
@@ -26,6 +29,7 @@ export class game extends Component {
     private clickTime = 0;
     private clickGapFlag = false;
     private clickGapTime = 0;
+    private player = null;
     start() {
         PhysicsSystem2D.instance.enable = true;
         PhysicsSystem2D.instance.gravity = v2(0, 0);    
@@ -47,6 +51,7 @@ export class game extends Component {
         this.node.on(Node.EventType.MOUSE_MOVE, this.onTouchMove, this);
         this.node.on(Node.EventType.TOUCH_END, this.onTouchEnd, this);
         this.node.on(Node.EventType.TOUCH_CANCEL, this.onTouchCancel, this);
+        this.setPlayersData(Data.PlayerInfo);
     }
 
     update(deltaTime: number) {
@@ -55,6 +60,9 @@ export class game extends Component {
             this.clickTime += deltaTime;
             if(this.clickTime >= Data.game.Bullet_Gap_Time){
                 this.createBullet(nowMousePos);
+                if(this.clickFlag == true){
+                    EventController.sendEvent("touchmove",nowMousePos)
+                }
                 this.clickTime = 0;
             }
         }
@@ -65,6 +73,13 @@ export class game extends Component {
                 this.clickGapFlag = false;
                 this.clickGapTime = 0;
             }
+        }
+    }
+
+    setPlayersData(msg){
+        for(let i = 0; i < this.players.length; i++){
+            this.player = this.players[i];
+            this.player.getComponent("player").setData(msg.players["player" + (i+1)]);
         }
     }
 
@@ -94,9 +109,12 @@ export class game extends Component {
     onTouchStart(event: EventTouch) {
         const worldPos = event.getUILocation();
         //log('開始世界座標:', worldPos);
+        nowMousePos = worldPos;
         this.clickFlag = true;
         this.targetNode.active = true;
-        
+        if(this.clickFlag == true){
+            EventController.sendEvent("touchmove",nowMousePos)
+        }
     }
 
     onTouchMove(event: EventTouch) {
@@ -104,6 +122,9 @@ export class game extends Component {
         //console.log('移動世界座標:', worldPos);
         nowMousePos = worldPos;
         this.targetNode.setPosition(worldPos.x - (Data.game.Screen_Width / 2),worldPos.y - (Data.game.Screen_Height / 2))
+        //if(this.clickFlag == true){
+            //EventController.sendEvent("touchmove",nowMousePos)
+        //}
     }
 
     onTouchEnd(event: EventTouch) {
@@ -127,18 +148,16 @@ export class game extends Component {
     }
 
     createBullet(worldPos){
-        const startX = 640;
-        const startY = 0;
+        const startPos = Data.PlayerInfo.players["player" + Data.PlayerInfo.selfID].bullet_StartPos;
         const targetX = worldPos.x;
         const targetY = worldPos.y;
-        const dx = targetX - startX;
-        const dy = targetY - startY;
+        const dx = targetX - (startPos.x + (Data.game.Screen_Width / 2));
+        const dy = targetY - (startPos.y + (Data.game.Screen_Height / 2));
         const length = Math.sqrt(dx * dx + dy * dy);
+
         this.bullet = instantiate(this.bulletPrefab);
-        this.bullet.setPosition(0,-360);
+        this.bullet.setPosition(startPos.x,startPos.y);
         const msg = {
-            x : 0,
-            y : -360,
             vx : (dx / length) * 15,
             vy : (dy / length) * 15
         }

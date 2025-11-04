@@ -4,7 +4,7 @@ const { ccclass, property } = _decorator;
 export namespace Data {
 
     export enum game{
-        Total_Fish = 20,
+        Total_Fish = 2,
         Screen_Width = 1280,
         Screen_Height = 720,
         Bullet_Gap_Time = 0.1,
@@ -28,6 +28,31 @@ export namespace Data {
             {id:13,name:'fish13',hp:150,minSpeed:9,maxSpeed:13,score:100,delay:138/2,weight:90},
             {id:14,name:'fish14',hp:500,minSpeed:5,maxSpeed:10,score:1000,delay:276/2,weight:30}
         ]
+    }
+
+    export class PlayerInfo{
+        public static selfID = 2;
+        public static players = {
+            player1:{
+                id:1,
+                name:"jimmy",
+                balance:32541,
+                bullet_StartPos:{x:-420,y:-270}
+            },
+            player2:{
+                id:2,
+                name:"jimmy1",
+                balance:148293,
+                bullet_StartPos:{x:0,y:-270}
+            },
+            player3:{
+                id:3,
+                name:"jimmy2",
+                balance:95843,
+                bullet_StartPos:{x:420,y:-270}
+            }
+        }
+        
     }
 }
 
