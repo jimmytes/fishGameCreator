@@ -32,27 +32,35 @@ export namespace Data {
 
     export class PlayerInfo{
         public static selfID = 2;
+        public static nowBetIndex = 5;
         public static players = {
             player1:{
                 id:1,
                 name:"jimmy",
                 balance:32541,
+                nowBetIndex:0,
                 bullet_StartPos:{x:-420,y:-270}
             },
             player2:{
                 id:2,
                 name:"jimmy1",
                 balance:148293,
+                nowBetIndex:1,
                 bullet_StartPos:{x:0,y:-270}
             },
             player3:{
                 id:3,
                 name:"jimmy2",
                 balance:95843,
+                nowBetIndex:0,
                 bullet_StartPos:{x:420,y:-270}
             }
         }
         
+    }
+
+    export class BetInfo{
+        public static betTable = [1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90,100];
     }
 }
 

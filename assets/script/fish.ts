@@ -12,8 +12,7 @@ export class fish extends Component {
         fishname:null,
         direction:null,
         speed:null,
-        posX:null,
-        posY:null,
+        pos:null,
         width:null,
         height:null
     }
@@ -46,8 +45,7 @@ export class fish extends Component {
         this.node.angle = random_angle;
         this.fish_info.direction = direction;
         this.fish_info.speed = 1;
-        this.fish_info.posX = this.node.getPosition().x;
-        this.fish_info.posY = this.node.getPosition().y;
+        this.fish_info.pos = this.node.getPosition();
         this.fish_info.width = this.node.getChildByName(this.fish_info.fishname).getComponent(UITransform).width;
         this.fish_info.height = this.node.getChildByName(this.fish_info.fishname).getComponent(UITransform).height;
         this.create_flag = true;
@@ -55,7 +53,7 @@ export class fish extends Component {
 
     onBeginContact (selfCollider: Collider2D, otherCollider: Collider2D, contact: IPhysics2DContact | null) {
         if(otherCollider.node.name != "bullet_sprite")return;
-        console.log("被撞到的是：", selfCollider.node.name,"撞他的是:",otherCollider.node.name);
+        //console.log("被撞到的是：", selfCollider.node.name,"撞他的是:",otherCollider.node.name);
         
         this.node.getChildByName(this.fish_info.fishname).getComponent(Sprite).color = new Color(255,0,0);
         this.scheduleOnce(function(){
@@ -64,20 +62,20 @@ export class fish extends Component {
     }
 
     moveFish(){
-        this.fish_info.posX -= this.fish_info.direction.x * this.fish_info.speed;
-        this.fish_info.posY -= this.fish_info.direction.y * this.fish_info.speed;
-        this.node.setPosition(this.fish_info.posX,this.fish_info.posY);
-        if(this.fish_info.posX > (Data.game.Screen_Width / 2) + this.fish_info.width){
-            this.fish_info.posX = -(Data.game.Screen_Width / 2) - this.fish_info.width
+        this.fish_info.pos.x -= this.fish_info.direction.x * this.fish_info.speed;
+        this.fish_info.pos.y -= this.fish_info.direction.y * this.fish_info.speed;
+        this.node.setPosition(this.fish_info.pos.x,this.fish_info.pos.y);
+        if(this.fish_info.pos.x > (Data.game.Screen_Width / 2) + this.fish_info.width){
+            this.fish_info.pos.x = -(Data.game.Screen_Width / 2) - this.fish_info.width
         }
-        if(this.fish_info.posX < -(Data.game.Screen_Width / 2) - this.fish_info.width){
-            this.fish_info.posX = (Data.game.Screen_Width / 2) + this.fish_info.width
+        if(this.fish_info.pos.x < -(Data.game.Screen_Width / 2) - this.fish_info.width){
+            this.fish_info.pos.x = (Data.game.Screen_Width / 2) + this.fish_info.width
         }
-        if(this.fish_info.posY > (Data.game.Screen_Height / 2) + this.fish_info.height){
-            this.fish_info.posY = -(Data.game.Screen_Height / 2) - this.fish_info.height
+        if(this.fish_info.pos.y > (Data.game.Screen_Height / 2) + this.fish_info.height){
+            this.fish_info.pos.y = -(Data.game.Screen_Height / 2) - this.fish_info.height
         }
-        if(this.fish_info.posY < -(Data.game.Screen_Height / 2) - this.fish_info.height){
-            this.fish_info.posY = (Data.game.Screen_Height / 2) + this.fish_info.height
+        if(this.fish_info.pos.y < -(Data.game.Screen_Height / 2) - this.fish_info.height){
+            this.fish_info.pos.y = (Data.game.Screen_Height / 2) + this.fish_info.height
         }
     }
 }

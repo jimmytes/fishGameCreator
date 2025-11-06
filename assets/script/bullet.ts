@@ -10,7 +10,9 @@ export class bullet extends Component {
     private vx = null;
     private vy = null;
     private bulletNode = null;
-    private hitEffectNode = null
+    private hitEffectNode = null;
+    private dx = 1;
+    private dy = 1;
     start() {
         this.bulletNode = this.node.getChildByName("bullet_sprite");
         this.hitEffectNode = this.node.getChildByName("hit_sprite");
@@ -30,6 +32,14 @@ export class bullet extends Component {
     onBeginContact (selfCollider: Collider2D, otherCollider: Collider2D, contact: IPhysics2DContact | null) {
         //console.log("被撞到的是：", selfCollider.node.name,"撞他的是:",otherCollider.node.name);
         if(otherCollider.node.name == "bullet_sprite")return;
+        if(otherCollider.node.name == "up_wall" || otherCollider.node.name == "down_wall"){
+            this.dy = this.dy *= -1;
+            return;
+        }
+        if(otherCollider.node.name == "right_wall" || otherCollider.node.name == "left_wall"){
+            this.dx = this.dx *= -1;
+            return;
+        }
         this.create_flag = false;
         this.bulletNode.active = false;
         this.hitEffectNode.active = true;
@@ -51,8 +61,8 @@ export class bullet extends Component {
 
     moveBullet(){
         let nowPos = this.node.getPosition();
-        nowPos.x += this.vx * Data.game.Bullet_Speed;
-        nowPos.y += this.vy * Data.game.Bullet_Speed;
+        nowPos.x += this.vx * Data.game.Bullet_Speed * this.dx;
+        nowPos.y += this.vy * Data.game.Bullet_Speed * this.dy;
         this.node.setPosition(nowPos.x,nowPos.y)
     }
 }

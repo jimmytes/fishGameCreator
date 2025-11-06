@@ -12,6 +12,8 @@ export class player extends Component {
     nameNode: Node = null;
     @property(Node)
     balanceNode: Node = null;
+    @property(Node)
+    betNumNode: Node = null;
     private my_self = false;
     private bullet_pos = null;
     private cannon_pos = null;
@@ -28,11 +30,17 @@ export class player extends Component {
         else{
             this.my_self = false;
         }
-        log(this.my_self)
-        // this.cannonNode.angle = msg90
         this.bullet_pos = msg.bullet_StartPos;
         this.nameNode.getComponent(Label).string = msg.name;
         this.balanceNode.getComponent(Label).string = msg.balance;
+        if(this.my_self == false){//別人
+            this.node.getChildByName("Plus_Button").active = false;
+            this.node.getChildByName("Minus_Button").active = false;
+            this.betNumNode.getComponent(Label).string = Data.BetInfo.betTable[msg.nowBetIndex].toString();
+        }
+        else{//自己
+            this.betNumNode.getComponent(Label).string = Data.BetInfo.betTable[Data.PlayerInfo.nowBetIndex].toString();
+        }
     }
 
     cannonEffect(msg){
@@ -75,6 +83,24 @@ export class player extends Component {
 
         //log("目前滑鼠位置: " + msg)
         //log("此炮臺位置: " + "X: " + (this.bullet_pos.x+640) + "Y: " + (this.bullet_pos.y+360))
+    }
+
+    clickChangeBet(event,customData){
+        let betTableLength = Data.BetInfo.betTable.length - 1;
+        if(customData == "plus"){
+            Data.PlayerInfo.nowBetIndex++;
+            if(Data.PlayerInfo.nowBetIndex >= betTableLength){
+                Data.PlayerInfo.nowBetIndex = betTableLength;
+            }
+        }
+        else if(customData == "minus"){
+            Data.PlayerInfo.nowBetIndex--;
+            if(Data.PlayerInfo.nowBetIndex <= 0){
+                Data.PlayerInfo.nowBetIndex = 0;
+            }
+        }
+
+        this.betNumNode.getComponent(Label).string = Data.BetInfo.betTable[Data.PlayerInfo.nowBetIndex].toString();
     }
 
     update(deltaTime: number) {
