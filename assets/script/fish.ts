@@ -38,8 +38,12 @@ export class fish extends Component {
         let random_angle = Math.floor(Math.random() * 361);
         let radius = random_angle * Math.PI / 180;
         let direction = new Vec2(Math.cos(radius),Math.sin(radius));
-        let collider = this.node.getChildByName(this.fish_info.fishname).getComponent(Collider2D);
-        collider.on(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this);
+        // let collider = this.node.getChildByName(this.fish_info.fishname).getComponent(Collider2D);
+        // collider.on(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this);
+        let colliders = this.node.getChildByName(this.fish_info.fishname).getComponentsInChildren(Collider2D);
+        for (const col of colliders) {
+            col.on(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this);
+        }
         this.node.getChildByName(this.fish_info.fishname).active = true;
         this.node.setPosition(Math.floor(Math.random() * Data.game.Screen_Width) - (Data.game.Screen_Width / 2),Math.floor(Math.random() * Data.game.Screen_Height) - (Data.game.Screen_Height / 2));
         this.node.angle = random_angle;
