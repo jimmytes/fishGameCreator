@@ -1,6 +1,10 @@
 import { _decorator, Component, Node, Prefab, instantiate, PhysicsSystem2D, v2, Vec2, Vec3, UITransform, Sprite, EventTouch, log } from 'cc';
 import { Data } from './DataController';
 import { EventController } from './EventController';
+import { soundManager } from './soundManager';
+import { App } from './App';
+
+import * as i18n from 'db://i18n/LanguageData';
 
 const { ccclass, property } = _decorator;
 let nowMousePos = null;
@@ -21,7 +25,9 @@ export class game extends Component {
     targetNode: Node = null;
     @property([Node])
     public players: Node[] = [];
-    
+    @property(Prefab)
+    popUIPrefab: Prefab = null;
+
     private fish = null;
     private bullet = null;
     private wavePos = new Vec2(-640,360);
@@ -29,7 +35,10 @@ export class game extends Component {
     private clickTime = 0;
     private clickGapFlag = false;
     private clickGapTime = 0;
-    private player = null;
+    private selfPlayer = null;
+    private otherPlayer = null;
+    private sound = null;
+    private popUI = null;
     start() {
         PhysicsSystem2D.instance.enable = true;
         PhysicsSystem2D.instance.gravity = v2(0, 0);    
@@ -44,6 +53,12 @@ export class game extends Component {
         system.positionIterations = 8;
         this.initFish();
         this.waveSprite.setPosition(-640,360)
+        this.sound = soundManager.instance;
+
+        this.popUI = instantiate(this.popUIPrefab);
+        this.node.addChild(this.popUI);
+
+        App.initLanguage(Data.game.Language);
     }
 
     onLoad(){
@@ -60,9 +75,6 @@ export class game extends Component {
             this.clickTime += deltaTime;
             if(this.clickTime >= Data.game.Bullet_Gap_Time){
                 this.createBullet(nowMousePos);
-                if(this.clickFlag == true){
-                    EventController.sendEvent("touchmove",nowMousePos)
-                }
                 this.clickTime = 0;
             }
         }
@@ -78,8 +90,14 @@ export class game extends Component {
 
     setPlayersData(msg){
         for(let i = 0; i < this.players.length; i++){
-            this.player = this.players[i];
-            this.player.getComponent("player").setData(msg.players["player" + (i+1)]);
+            if(Data.PlayerInfo.selfID == msg.players["player" + (i+1)].id){
+                this.selfPlayer = this.players[i];
+                this.selfPlayer.getComponent("player").setData(msg.players["player" + (i+1)]);
+            }
+            else{
+                this.otherPlayer = this.players[i];
+                this.otherPlayer.getComponent("player").setData(msg.players["player" + (i+1)]);
+            }
         }
     }
 
@@ -112,19 +130,13 @@ export class game extends Component {
         nowMousePos = worldPos;
         this.clickFlag = true;
         this.targetNode.active = true;
-        if(this.clickFlag == true){
-            EventController.sendEvent("touchmove",nowMousePos)
-        }
     }
 
     onTouchMove(event: EventTouch) {
         const worldPos = event.getUILocation();
         //console.log('移動世界座標:', worldPos);
         nowMousePos = worldPos;
-        this.targetNode.setPosition(worldPos.x - (Data.game.Screen_Width / 2),worldPos.y - (Data.game.Screen_Height / 2))
-        //if(this.clickFlag == true){
-            //EventController.sendEvent("touchmove",nowMousePos)
-        //}
+        this.targetNode.setPosition(worldPos.x - (Data.game.Screen_Width / 2),worldPos.y - (Data.game.Screen_Height / 2));
     }
 
     onTouchEnd(event: EventTouch) {
@@ -148,13 +160,18 @@ export class game extends Component {
     }
 
     createBullet(worldPos){
+        const credit = this.selfPlayer.getComponent("player").balance - Data.BetInfo.betTable[Data.PlayerInfo.nowBetIndex];
+        if(credit < 0){
+            this.popUI.getComponent("popUI").showPopUI();
+            return
+        }
         const startPos = Data.PlayerInfo.players["player" + Data.PlayerInfo.selfID].bullet_StartPos;
         const targetX = worldPos.x;
         const targetY = worldPos.y;
         const dx = targetX - (startPos.x + (Data.game.Screen_Width / 2));
         const dy = targetY - (startPos.y + (Data.game.Screen_Height / 2));
         const length = Math.sqrt(dx * dx + dy * dy);
-
+      
         this.bullet = instantiate(this.bulletPrefab);
         this.bullet.setPosition(startPos.x,startPos.y);
         const msg = {
@@ -162,7 +179,14 @@ export class game extends Component {
             vy : (dy / length) * 15
         }
         this.bulletNode.addChild(this.bullet);
-        this.bullet.getComponent("bullet").setData(msg)
+        this.bullet.getComponent("bullet").setData(msg);
+        this.sound.playSFX("shot",false);
+
+        this.selfPlayer.getComponent("player").balance = credit;
+        this.selfPlayer.getComponent("player").updateBalance();
+
+        EventController.sendEvent("cannon_effect",nowMousePos)
+
     }
 
     weightedPick(list) {

@@ -4,6 +4,7 @@ const { ccclass, property } = _decorator;
 export namespace Data {
 
     export enum game{
+        Language = "en",
         Total_Fish = 2,
         Screen_Width = 1280,
         Screen_Height = 720,
@@ -32,7 +33,7 @@ export namespace Data {
 
     export class PlayerInfo{
         public static selfID = 2;
-        public static nowBetIndex = 5;
+        public static nowBetIndex = 0;
         public static players = {
             player1:{
                 id:1,
@@ -44,7 +45,7 @@ export namespace Data {
             player2:{
                 id:2,
                 name:"jimmy1",
-                balance:148293,
+                balance:1482,
                 nowBetIndex:1,
                 bullet_StartPos:{x:0,y:-270}
             },

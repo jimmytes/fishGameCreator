@@ -17,9 +17,11 @@ export class player extends Component {
     private my_self = false;
     private bullet_pos = null;
     private cannon_pos = null;
+    private playerName = null;
+    private balance = null;
     start() {
         this.cannon_pos = this.cannonNode.getPosition();
-        EventController.receiveEvent("touchmove",this.cannonEffect,this)
+        EventController.receiveEvent("cannon_effect",this.cannonEffect,this)
     }
 
     setData(msg){
@@ -30,9 +32,13 @@ export class player extends Component {
         else{
             this.my_self = false;
         }
+        this.playerName = msg.name;
+        this.balance = msg.balance;
+
         this.bullet_pos = msg.bullet_StartPos;
-        this.nameNode.getComponent(Label).string = msg.name;
-        this.balanceNode.getComponent(Label).string = msg.balance;
+        this.nameNode.getComponent(Label).string = this.playerName;
+        this.balanceNode.getComponent(Label).string = this.balance;
+        
         if(this.my_self == false){//別人
             this.node.getChildByName("Plus_Button").active = false;
             this.node.getChildByName("Minus_Button").active = false;
@@ -101,6 +107,10 @@ export class player extends Component {
         }
 
         this.betNumNode.getComponent(Label).string = Data.BetInfo.betTable[Data.PlayerInfo.nowBetIndex].toString();
+    }
+    
+    updateBalance(){
+        this.balanceNode.getComponent(Label).string = this.balance;
     }
 
     update(deltaTime: number) {
