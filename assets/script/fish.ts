@@ -1,5 +1,8 @@
-import { _decorator, Component, Node, Sprite, Color, UITransform, Vec2, SpriteAtlas, Collider2D, Contact2DType, IPhysics2DContact, log} from 'cc';
+import { _decorator, Component, Node, Sprite, tween, UIOpacity, Color, UITransform, Vec2, SpriteAtlas, Collider2D, Contact2DType, IPhysics2DContact, log} from 'cc';
 import { Data } from './DataController';
+import { EventController } from './EventController';
+import { bullet } from './bullet';
+import { game } from './game';
 
 const { ccclass, property } = _decorator;
 
@@ -7,15 +10,19 @@ const { ccclass, property } = _decorator;
 export class fish extends Component {
     @property({ type: SpriteAtlas })
     fishAtlas: SpriteAtlas | null = null;
+    private colliders = null;
     private create_flag = false;
     private fish_info = {
         fishname:null,
         direction:null,
+        hp:null,
         speed:null,
+        multiple:null,
         pos:null,
         width:null,
         height:null
     }
+    private bulletHitRecord = [];
 
     onLoad(){
         
@@ -34,31 +41,90 @@ export class fish extends Component {
     
 
     setData(msg){
-        this.fish_info.fishname = "fish" + msg;
+        const screenW = Data.game.Screen_Width;
+        const screenH = Data.game.Screen_Height;
+        
+        // 決定從哪一邊進來：0=上, 1=下, 2=左, 3=右
+        const side = Math.floor(Math.random() * 4);
+        
+        let spawnX = 0;
+        let spawnY = 0;
+
+        this.fish_info.fishname = "fish" + msg.id;
+        this.fish_info.width = this.node.getChildByName(this.fish_info.fishname).getComponent(UITransform).width;
+        this.fish_info.height = this.node.getChildByName(this.fish_info.fishname).getComponent(UITransform).height;
+
+        switch (side) {
+            case 0: // 上方
+                spawnX = Math.random() * screenW - screenW / 2;
+                spawnY = screenH / 2 + this.fish_info.width; // 超出螢幕 100px
+                break;
+            case 1: // 下方
+                spawnX = Math.random() * screenW - screenW / 2;
+                spawnY = -(screenH / 2) - this.fish_info.width;
+                break;
+            case 2: // 左側
+                spawnX = -(screenW / 2) - this.fish_info.width;
+                spawnY = Math.random() * screenH - screenH / 2;
+                break;
+            case 3: // 右側
+                spawnX = screenW / 2 + this.fish_info.width;
+                spawnY = Math.random() * screenH - screenH / 2;
+                break;
+        }
+
         let random_angle = Math.floor(Math.random() * 361);
         let radius = random_angle * Math.PI / 180;
         let direction = new Vec2(Math.cos(radius),Math.sin(radius));
         // let collider = this.node.getChildByName(this.fish_info.fishname).getComponent(Collider2D);
         // collider.on(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this);
-        let colliders = this.node.getChildByName(this.fish_info.fishname).getComponentsInChildren(Collider2D);
-        for (const col of colliders) {
+        this.colliders = this.node.getChildByName(this.fish_info.fishname).getComponentsInChildren(Collider2D);
+        for (const col of this.colliders) {
             col.on(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this);
         }
         this.node.getChildByName(this.fish_info.fishname).active = true;
-        this.node.setPosition(Math.floor(Math.random() * Data.game.Screen_Width) - (Data.game.Screen_Width / 2),Math.floor(Math.random() * Data.game.Screen_Height) - (Data.game.Screen_Height / 2));
+        this.node.setPosition(spawnX, spawnY);
         this.node.angle = random_angle;
         this.fish_info.direction = direction;
+        this.fish_info.hp = msg.hp;
+        this.fish_info.multiple = msg.multiple;
         this.fish_info.speed = 1;
         this.fish_info.pos = this.node.getPosition();
-        this.fish_info.width = this.node.getChildByName(this.fish_info.fishname).getComponent(UITransform).width;
-        this.fish_info.height = this.node.getChildByName(this.fish_info.fishname).getComponent(UITransform).height;
         this.create_flag = true;
     }
 
     onBeginContact (selfCollider: Collider2D, otherCollider: Collider2D, contact: IPhysics2DContact | null) {
         if(otherCollider.node.name != "bullet_sprite")return;
         //console.log("被撞到的是：", selfCollider.node.name,"撞他的是:",otherCollider.node.name);
-        
+        const bulletScript = otherCollider.node.parent.getComponent(bullet) as any;
+        //log(bulletScript.betInfo)
+        this.bulletHitRecord.push(bulletScript.betInfo);
+        this.fish_info.hp--;
+        if(this.fish_info.hp == 0){
+            let sum = 0;
+            for(let i = 0; i < this.bulletHitRecord.length; i++){
+                sum += this.bulletHitRecord[i];
+            }
+            let avg = sum / this.bulletHitRecord.length;
+            const score = Number((avg * this.fish_info.multiple).toFixed(0));
+            log("得分: " + score)
+            Data.PlayerInfo.selfCredit += score;
+
+            for (const col of this.colliders) {
+                col.off(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this);
+                col.enabled = false;
+            }
+            this.create_flag = false;
+
+            let opacity = this.node.getChildByName(this.fish_info.fishname).getComponent(UIOpacity);
+            tween(opacity)
+            .to(3, { opacity: 0 })
+            .call(() => {
+                this.node.destroy();
+                EventController.sendEvent("createNewFish","");     
+            })
+            .start();
+        }
         this.node.getChildByName(this.fish_info.fishname).getComponent(Sprite).color = new Color(255,0,0);
         this.scheduleOnce(function(){
             this.node.getChildByName(this.fish_info.fishname).getComponent(Sprite).color = new Color(255,255,255);

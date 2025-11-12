@@ -9,6 +9,7 @@ export class bullet extends Component {
     private create_flag = false;
     private vx = null;
     private vy = null;
+    public betInfo = null;
     private bulletNode = null;
     private hitEffectNode = null;
     private dx = 1;
@@ -57,6 +58,7 @@ export class bullet extends Component {
         this.create_flag = true;
         this.vx = msg.vx;
         this.vy = msg.vy;
+        this.betInfo = msg.nowbet;
     }
 
     moveBullet(){

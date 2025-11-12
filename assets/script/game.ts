@@ -66,6 +66,7 @@ export class game extends Component {
         this.node.on(Node.EventType.MOUSE_MOVE, this.onTouchMove, this);
         this.node.on(Node.EventType.TOUCH_END, this.onTouchEnd, this);
         this.node.on(Node.EventType.TOUCH_CANCEL, this.onTouchCancel, this);
+        EventController.receiveEvent("createNewFish",this.createNewFish,this)
         this.setPlayersData(Data.PlayerInfo);
     }
 
@@ -86,6 +87,7 @@ export class game extends Component {
                 this.clickGapTime = 0;
             }
         }
+        this.selfPlayer.getComponent("player").setCredit(Data.PlayerInfo.selfCredit);
     }
 
     setPlayersData(msg){
@@ -104,12 +106,28 @@ export class game extends Component {
     initFish(){
         for(let i = 0; i < Data.game.Total_Fish; i++){
             let random_fish = this.weightedPick(Data.FishInfo.fish);
+            let msg = {
+                id:random_fish,
+                hp:Data.FishInfo.fish[random_fish - 1].hp,
+                multiple:Data.FishInfo.fish[random_fish - 1].multiple
+            }
             this.fish = instantiate(this.fishPrefab);
-            this.fish.getComponent("fish").setData(random_fish);
+            this.fish.getComponent("fish").setData(msg);
             this.fishNode.addChild(this.fish);
         }
     }
 
+    createNewFish(){
+        let random_fish = this.weightedPick(Data.FishInfo.fish);
+        let msg = {
+            id:random_fish,
+            hp:Data.FishInfo.fish[random_fish - 1].hp,
+            multiple:Data.FishInfo.fish[random_fish - 1].multiple
+        }
+        this.fish = instantiate(this.fishPrefab);
+        this.fish.getComponent("fish").setData(msg);
+        this.fishNode.addChild(this.fish);
+    }
 
     runWave(){
         this.wavePos.x -= 1;
@@ -160,11 +178,12 @@ export class game extends Component {
     }
 
     createBullet(worldPos){
-        const credit = this.selfPlayer.getComponent("player").balance - Data.BetInfo.betTable[Data.PlayerInfo.nowBetIndex];
+        let credit = Data.PlayerInfo.selfCredit - Data.BetInfo.betTable[Data.PlayerInfo.nowBetIndex];
         if(credit < 0){
-            this.popUI.getComponent("popUI").showPopUI();
+            this.popUI.getComponent("popUI").showPopUI('104001');
             return
         }
+        Data.PlayerInfo.selfCredit = credit;
         const startPos = Data.PlayerInfo.players["player" + Data.PlayerInfo.selfID].bullet_StartPos;
         const targetX = worldPos.x;
         const targetY = worldPos.y;
@@ -176,15 +195,13 @@ export class game extends Component {
         this.bullet.setPosition(startPos.x,startPos.y);
         const msg = {
             vx : (dx / length) * 15,
-            vy : (dy / length) * 15
+            vy : (dy / length) * 15,
+            nowbet : Data.BetInfo.betTable[Data.PlayerInfo.nowBetIndex]
         }
         this.bulletNode.addChild(this.bullet);
         this.bullet.getComponent("bullet").setData(msg);
         this.sound.playSFX("shot",false);
-
-        this.selfPlayer.getComponent("player").balance = credit;
-        this.selfPlayer.getComponent("player").updateBalance();
-
+        // this.selfPlayer.getComponent("player").setCredit(Data.PlayerInfo.selfCredit);
         EventController.sendEvent("cannon_effect",nowMousePos)
 
     }

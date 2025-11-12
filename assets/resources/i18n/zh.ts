@@ -4,7 +4,7 @@ const win = window as any;
 export const languages = {
    // POP UI
     "104001":"余额不足",
-    "104002":"",
+    "104002":"网路错误",
 };
 
 if (!win.languages) {
