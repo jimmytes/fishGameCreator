@@ -3,14 +3,18 @@ const { ccclass, property } = _decorator;
 
 export namespace Data {
 
-    export enum game{
-        Language = "en",
-        Total_Fish = 2,
-        Screen_Width = 1280,
-        Screen_Height = 720,
-        Bullet_Gap_Time = 0.1,
-        Bullet_Speed = 2
-    };
+    export class Game{
+        public static DEF_GAMEID = "PSF-ON-00001";
+        public static RES_LANGUAGE: string = "en";
+        public static Total_Fish:number = 20;
+        public static Screen_Width:number = 1280;
+        public static Screen_Height:number = 720;
+        public static Bullet_Gap_Time:number = 0.15;
+        public static Bullet_Speed:number = 2;
+        public static Special_FS_GameTime:number = 30;
+        public static Auto_Target:boolean = false;
+        public static Target_FishPos = null;
+    }
 
     export class FishInfo {
         public static fish = [

@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Label, tween, Vec3, log } from 'cc';
+import { _decorator, Component, Node, Label, Animation, tween, Vec2, Vec3, log } from 'cc';
 import { Data } from './DataController';
 import { EventController } from './EventController';
 
@@ -8,6 +8,8 @@ const { ccclass, property } = _decorator;
 export class player extends Component {
     @property(Node)
     cannonNode: Node = null;
+    @property(Node)
+    lightningAnmNode: Node = null;
     @property(Node)
     nameNode: Node = null;
     @property(Node)
@@ -92,6 +94,29 @@ export class player extends Component {
         //log("目前滑鼠位置: " + msg)
         //log("此炮臺位置: " + "X: " + (this.bullet_pos.x+640) + "Y: " + (this.bullet_pos.y+360))
     }
+    
+    lightning(){
+        if (Data.Game.Target_FishPos == null){
+            this.lightningAnmNode.active = false;
+            return;
+        }
+        let startPos = Data.PlayerInfo.players["player" + Data.PlayerInfo.selfID].bullet_StartPos;
+        let targetPos = Data.Game.Target_FishPos;
+        this.lightningAnmNode.active = true;
+        // let anm = this.lightningAnmNode.getComponent(Animation)
+        // anm.play('lightning')
+        let dx = startPos.x - targetPos.x;
+        let dy = startPos.y - targetPos.y;
+        let distance = Math.sqrt(dx * dx + dy * dy);
+
+        let rad = Math.atan2(dx, dy);
+        let deg = rad * 180 / Math.PI;
+        
+        this.lightningAnmNode.setScale(1,0.00125 * distance)
+        this.lightningAnmNode.angle = -deg;
+        //log('角度:', deg);
+        //log('距離:', distance);
+    }
 
     clickChangeBet(event,customData){
         let betTableLength = Data.BetInfo.betTable.length - 1;
@@ -117,7 +142,9 @@ export class player extends Component {
     }
 
     update(deltaTime: number) {
-        
+        if(this.my_self == true){
+            this.lightning()
+        }
     }
 }
 

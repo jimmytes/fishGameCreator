@@ -63,8 +63,8 @@ export class bullet extends Component {
 
     moveBullet(){
         let nowPos = this.node.getPosition();
-        nowPos.x += this.vx * Data.game.Bullet_Speed * this.dx;
-        nowPos.y += this.vy * Data.game.Bullet_Speed * this.dy;
+        nowPos.x += this.vx * Data.Game.Bullet_Speed * this.dx;
+        nowPos.y += this.vy * Data.Game.Bullet_Speed * this.dy;
         this.node.setPosition(nowPos.x,nowPos.y)
     }
 }

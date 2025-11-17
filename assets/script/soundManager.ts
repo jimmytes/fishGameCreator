@@ -52,6 +52,10 @@ export class soundManager extends Component {
         this.EffectAudioSource.loop = loop;
         return this.EffectAudioSource.play();
     }
+    
+    public stopSFX(){
+        this.EffectAudioSource.stop();
+    }
 
     _getAudioIndex(name) {
         if (!name) {

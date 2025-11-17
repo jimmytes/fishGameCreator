@@ -1,8 +1,9 @@
-import { _decorator, Component, Node, Sprite, tween, UIOpacity, Color, UITransform, Vec2, SpriteAtlas, Collider2D, Contact2DType, IPhysics2DContact, log} from 'cc';
+import { _decorator, Component, Node, Sprite, Button, tween, UIOpacity, Color, UITransform, Vec2, SpriteAtlas, Collider2D, Contact2DType, IPhysics2DContact, log} from 'cc';
 import { Data } from './DataController';
 import { EventController } from './EventController';
 import { bullet } from './bullet';
 import { game } from './game';
+import { soundManager } from './soundManager';
 
 const { ccclass, property } = _decorator;
 
@@ -23,12 +24,18 @@ export class fish extends Component {
         height:null
     }
     private bulletHitRecord = [];
-
+    public targetFishFlag = false;
+    private Game = null;
+    private sound = null;
+    private lazerHitTime = 0;
+    private lazerHitGap = 0.15;
     onLoad(){
-        
+        EventController.receiveEvent("auto_Target",this.clickEnable,this)
     }
 
     start() {
+        this.sound = soundManager.instance;
+        this.Game = game.instance;
 
     }
 
@@ -36,13 +43,21 @@ export class fish extends Component {
         if(this.create_flag == true){
             this.moveFish();
         }
+        
+        if(this.targetFishFlag == true){
+            this.lazerHitTime += deltaTime;
+            if(this.lazerHitTime >= this.lazerHitGap){
+                this.lazerHitFish();
+                this.lazerHitTime = 0;
+            }
+        }
     }
 
     
 
     setData(msg){
-        const screenW = Data.game.Screen_Width;
-        const screenH = Data.game.Screen_Height;
+        const screenW = Data.Game.Screen_Width;
+        const screenH = Data.Game.Screen_Height;
         
         // 決定從哪一邊進來：0=上, 1=下, 2=左, 3=右
         const side = Math.floor(Math.random() * 4);
@@ -85,6 +100,13 @@ export class fish extends Component {
         this.node.getChildByName(this.fish_info.fishname).active = true;
         this.node.setPosition(spawnX, spawnY);
         this.node.angle = random_angle;
+        if(random_angle >= 90 && random_angle <= 270){
+            this.node.setScale(1,-1);
+        }
+        else{
+            this.node.setScale(1,1);
+        }
+        
         this.fish_info.direction = direction;
         this.fish_info.hp = msg.hp;
         this.fish_info.multiple = msg.multiple;
@@ -135,18 +157,79 @@ export class fish extends Component {
         this.fish_info.pos.x -= this.fish_info.direction.x * this.fish_info.speed;
         this.fish_info.pos.y -= this.fish_info.direction.y * this.fish_info.speed;
         this.node.setPosition(this.fish_info.pos.x,this.fish_info.pos.y);
-        if(this.fish_info.pos.x > (Data.game.Screen_Width / 2) + this.fish_info.width){
-            this.fish_info.pos.x = -(Data.game.Screen_Width / 2) - this.fish_info.width
+        if(this.fish_info.pos.x > (Data.Game.Screen_Width / 2) + this.fish_info.width){
+            this.fish_info.pos.x = -(Data.Game.Screen_Width / 2) - this.fish_info.width
         }
-        if(this.fish_info.pos.x < -(Data.game.Screen_Width / 2) - this.fish_info.width){
-            this.fish_info.pos.x = (Data.game.Screen_Width / 2) + this.fish_info.width
+        if(this.fish_info.pos.x < -(Data.Game.Screen_Width / 2) - this.fish_info.width){
+            this.fish_info.pos.x = (Data.Game.Screen_Width / 2) + this.fish_info.width
         }
-        if(this.fish_info.pos.y > (Data.game.Screen_Height / 2) + this.fish_info.height){
-            this.fish_info.pos.y = -(Data.game.Screen_Height / 2) - this.fish_info.height
+        if(this.fish_info.pos.y > (Data.Game.Screen_Height / 2) + this.fish_info.height){
+            this.fish_info.pos.y = -(Data.Game.Screen_Height / 2) - this.fish_info.height
         }
-        if(this.fish_info.pos.y < -(Data.game.Screen_Height / 2) - this.fish_info.height){
-            this.fish_info.pos.y = (Data.game.Screen_Height / 2) + this.fish_info.height
+        if(this.fish_info.pos.y < -(Data.Game.Screen_Height / 2) - this.fish_info.height){
+            this.fish_info.pos.y = (Data.Game.Screen_Height / 2) + this.fish_info.height
         }
+
+
+        if(this.targetFishFlag == true){
+            Data.Game.Target_FishPos = this.fish_info.pos;
+            if(this.fish_info.pos.x > (Data.Game.Screen_Width / 2) || 
+               this.fish_info.pos.x < -(Data.Game.Screen_Width / 2) || 
+               this.fish_info.pos.y > (Data.Game.Screen_Height / 2) || 
+               this.fish_info.pos.y < -(Data.Game.Screen_Height / 2)){
+                EventController.sendEvent("reset_fish","");     
+            }
+        }
+    }
+    
+    clickEnable(bool){
+        this.node.getChildByName(this.fish_info.fishname).getComponent(Button).interactable = bool;
+    }
+
+    clickFish(){
+        let credit = this.Game.checkCredit();
+        if(credit == false)return;
+        EventController.sendEvent("reset_fish","");     
+        this.targetFishFlag = true;
+        this.sound.playSFX("lazer",true);
+        this.Game.setFishIcon(this.fish_info.fishname)
+    }
+
+    lazerHitFish(){
+        
+        this.Game.checkCredit();
+        this.fish_info.hp--;
+        this.bulletHitRecord.push(Data.BetInfo.betTable[Data.PlayerInfo.nowBetIndex])
+        if(this.fish_info.hp == 0){
+            EventController.sendEvent("reset_fish","");
+            let sum = 0;
+            for(let i = 0; i < this.bulletHitRecord.length; i++){
+                sum += this.bulletHitRecord[i];
+            }
+            let avg = sum / this.bulletHitRecord.length;
+            const score = Number((avg * this.fish_info.multiple).toFixed(0));
+            log("得分: " + score)
+            Data.PlayerInfo.selfCredit += score;
+
+            for (const col of this.colliders) {
+                col.off(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this);
+                col.enabled = false;
+            }
+            this.create_flag = false;
+
+            let opacity = this.node.getChildByName(this.fish_info.fishname).getComponent(UIOpacity);
+            tween(opacity)
+            .to(3, { opacity: 0 })
+            .call(() => {
+                this.node.destroy();
+                EventController.sendEvent("createNewFish","");     
+            })
+            .start();
+        }
+        this.node.getChildByName(this.fish_info.fishname).getComponent(Sprite).color = new Color(255,0,0);
+        this.scheduleOnce(function(){
+            this.node.getChildByName(this.fish_info.fishname).getComponent(Sprite).color = new Color(255,255,255);
+        },0.1)
     }
 }
 

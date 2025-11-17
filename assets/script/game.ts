@@ -1,8 +1,9 @@
-import { _decorator, Component, Node, Prefab, instantiate, PhysicsSystem2D, v2, Vec2, Vec3, UITransform, Sprite, EventTouch, log } from 'cc';
+import { _decorator, Component, Node, Prefab, instantiate, PhysicsSystem2D, v2, Vec2, Vec3, UITransform, Sprite, SpriteAtlas, EventTouch, log } from 'cc';
 import { Data } from './DataController';
 import { EventController } from './EventController';
 import { soundManager } from './soundManager';
 import { App } from './App';
+import { fish } from './fish';
 
 import * as i18n from 'db://i18n/LanguageData';
 
@@ -27,7 +28,10 @@ export class game extends Component {
     public players: Node[] = [];
     @property(Prefab)
     popUIPrefab: Prefab = null;
-
+    @property(Node)
+    fishIconNode: Node = null;
+    @property({ type: SpriteAtlas })
+    fishAtlas: SpriteAtlas | null = null;
     private fish = null;
     private bullet = null;
     private wavePos = new Vec2(-640,360);
@@ -35,10 +39,13 @@ export class game extends Component {
     private clickTime = 0;
     private clickGapFlag = false;
     private clickGapTime = 0;
+    private gameDuration = 0;
     private selfPlayer = null;
     private otherPlayer = null;
     private sound = null;
     private popUI = null;
+    public static instance: game;
+
     start() {
         PhysicsSystem2D.instance.enable = true;
         PhysicsSystem2D.instance.gravity = v2(0, 0);    
@@ -58,23 +65,31 @@ export class game extends Component {
         this.popUI = instantiate(this.popUIPrefab);
         this.node.addChild(this.popUI);
 
-        App.initLanguage(Data.game.Language);
+        App.initLanguage(Data.Game.RES_LANGUAGE);
     }
 
     onLoad(){
+        if (!game.instance) {
+            game.instance = this;
+        } else {
+            this.destroy();
+        }
+
         this.node.on(Node.EventType.TOUCH_START, this.onTouchStart, this);
         this.node.on(Node.EventType.MOUSE_MOVE, this.onTouchMove, this);
         this.node.on(Node.EventType.TOUCH_END, this.onTouchEnd, this);
         this.node.on(Node.EventType.TOUCH_CANCEL, this.onTouchCancel, this);
-        EventController.receiveEvent("createNewFish",this.createNewFish,this)
+        EventController.receiveEvent("createNewFish",this.createNewFish,this);
+        EventController.receiveEvent("reset_fish",this.resetFishTarget,this)
         this.setPlayersData(Data.PlayerInfo);
     }
 
     update(deltaTime: number) {
+        //this.gameDuration += deltaTime;
         this.runWave();
         if(this.clickFlag == true){
             this.clickTime += deltaTime;
-            if(this.clickTime >= Data.game.Bullet_Gap_Time){
+            if(this.clickTime >= Data.Game.Bullet_Gap_Time){
                 this.createBullet(nowMousePos);
                 this.clickTime = 0;
             }
@@ -82,12 +97,17 @@ export class game extends Component {
 
         if(this.clickGapFlag == true){
             this.clickGapTime += deltaTime;
-            if(this.clickGapTime >= Data.game.Bullet_Gap_Time){    
+            if(this.clickGapTime >= Data.Game.Bullet_Gap_Time){    
                 this.clickGapFlag = false;
                 this.clickGapTime = 0;
             }
         }
         this.selfPlayer.getComponent("player").setCredit(Data.PlayerInfo.selfCredit);
+
+        // if(this.gameDuration >= 10){
+        //     this.gameDuration = 0;
+        //     this.createSpecialFish();
+        // }
     }
 
     setPlayersData(msg){
@@ -104,7 +124,7 @@ export class game extends Component {
     }
 
     initFish(){
-        for(let i = 0; i < Data.game.Total_Fish; i++){
+        for(let i = 0; i < Data.Game.Total_Fish; i++){
             let random_fish = this.weightedPick(Data.FishInfo.fish);
             let msg = {
                 id:random_fish,
@@ -129,6 +149,18 @@ export class game extends Component {
         this.fishNode.addChild(this.fish);
     }
 
+    // createSpecialFish(){
+    //     let specialID = 9;
+    //     let msg = {
+    //         id:specialID,
+    //         hp:Data.FishInfo.fish[specialID - 1].hp,
+    //         multiple:Data.FishInfo.fish[specialID - 1].multiple
+    //     }
+    //     this.fish = instantiate(this.fishPrefab);
+    //     this.fish.getComponent("fish").setData(msg);
+    //     this.fishNode.addChild(this.fish);
+    // }
+
     runWave(){
         this.wavePos.x -= 1;
         this.wavePos.y += 1;
@@ -148,13 +180,16 @@ export class game extends Component {
         nowMousePos = worldPos;
         this.clickFlag = true;
         this.targetNode.active = true;
+        if(Data.Game.Auto_Target == true){
+            this.resetFishTarget()
+        }
     }
 
     onTouchMove(event: EventTouch) {
         const worldPos = event.getUILocation();
         //console.log('移動世界座標:', worldPos);
         nowMousePos = worldPos;
-        this.targetNode.setPosition(worldPos.x - (Data.game.Screen_Width / 2),worldPos.y - (Data.game.Screen_Height / 2));
+        this.targetNode.setPosition(worldPos.x - (Data.Game.Screen_Width / 2),worldPos.y - (Data.Game.Screen_Height / 2));
     }
 
     onTouchEnd(event: EventTouch) {
@@ -176,19 +211,45 @@ export class game extends Component {
         this.clickTime = 0;
         this.targetNode.active = false;
     }
+    
+    onClickAutoTarget(){
+        Data.Game.Auto_Target = !Data.Game.Auto_Target;
+        EventController.sendEvent("auto_Target",Data.Game.Auto_Target);
+        if(Data.Game.Auto_Target == false){
+            this.resetFishTarget()
+        }   
+    }
+
+    resetFishTarget(){
+        for(let i = 0; i < this.fishNode.children.length; i++){
+            let target = this.fishNode.children[i].getComponent(fish)
+            target.targetFishFlag = false;
+        }
+        Data.Game.Target_FishPos = null;
+        this.sound.stopSFX();
+        this.fishIconNode.active = false;
+    }
+
+    public setFishIcon(fishID){
+        this.fishIconNode.active = true;
+        this.fishIconNode.getComponent(Sprite).spriteFrame = this.fishAtlas.spriteFrames[fishID];
+        const icon_pic = this.fishIconNode.getComponent(UITransform);
+        const icon_box = new Vec2(45,45);
+        //log("w: " + icon_pic.width + "h: " + icon_pic.height);
+        const scale = Math.min(icon_box.x / icon_pic.width, icon_box.y / icon_pic.height);
+        this.fishIconNode.setScale(scale,scale,1);
+    }
 
     createBullet(worldPos){
-        let credit = Data.PlayerInfo.selfCredit - Data.BetInfo.betTable[Data.PlayerInfo.nowBetIndex];
-        if(credit < 0){
-            this.popUI.getComponent("popUI").showPopUI('104001');
-            return
-        }
-        Data.PlayerInfo.selfCredit = credit;
+        if(Data.Game.Auto_Target == true)return;
+        let credit = this.checkCredit();
+        if(credit == false)return;
+
         const startPos = Data.PlayerInfo.players["player" + Data.PlayerInfo.selfID].bullet_StartPos;
         const targetX = worldPos.x;
         const targetY = worldPos.y;
-        const dx = targetX - (startPos.x + (Data.game.Screen_Width / 2));
-        const dy = targetY - (startPos.y + (Data.game.Screen_Height / 2));
+        const dx = targetX - (startPos.x + (Data.Game.Screen_Width / 2));
+        const dy = targetY - (startPos.y + (Data.Game.Screen_Height / 2));
         const length = Math.sqrt(dx * dx + dy * dy);
       
         this.bullet = instantiate(this.bulletPrefab);
@@ -204,6 +265,17 @@ export class game extends Component {
         // this.selfPlayer.getComponent("player").setCredit(Data.PlayerInfo.selfCredit);
         EventController.sendEvent("cannon_effect",nowMousePos)
 
+    }
+    
+    public checkCredit(){
+        let credit = Data.PlayerInfo.selfCredit - Data.BetInfo.betTable[Data.PlayerInfo.nowBetIndex];
+        if(credit < 0){
+            this.popUI.getComponent("popUI").showPopUI('104001');
+            this.resetFishTarget();
+            return false
+        }
+        
+        Data.PlayerInfo.selfCredit = credit;
     }
 
     weightedPick(list) {
