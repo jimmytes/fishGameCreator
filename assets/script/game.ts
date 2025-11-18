@@ -66,6 +66,7 @@ export class game extends Component {
         this.node.addChild(this.popUI);
 
         App.initLanguage(Data.Game.RES_LANGUAGE);
+        this.sound.playMusic("normal_bgm",true);
     }
 
     onLoad(){
@@ -85,7 +86,7 @@ export class game extends Component {
     }
 
     update(deltaTime: number) {
-        //this.gameDuration += deltaTime;
+        this.gameDuration += deltaTime;
         this.runWave();
         if(this.clickFlag == true){
             this.clickTime += deltaTime;
@@ -104,10 +105,12 @@ export class game extends Component {
         }
         this.selfPlayer.getComponent("player").setCredit(Data.PlayerInfo.selfCredit);
 
-        // if(this.gameDuration >= 10){
-        //     this.gameDuration = 0;
-        //     this.createSpecialFish();
-        // }
+        if(this.gameDuration >= 300){//5分鐘出一條特殊魚
+            this.gameDuration = 0;
+            this.createSpecialFish();
+            this.sound.stopMusic();
+            this.sound.playMusic("feature_bgm",true);
+        }
     }
 
     setPlayersData(msg){
@@ -128,8 +131,10 @@ export class game extends Component {
             let random_fish = this.weightedPick(Data.FishInfo.fish);
             let msg = {
                 id:random_fish,
+                name:Data.FishInfo.fish[random_fish - 1].name,
                 hp:Data.FishInfo.fish[random_fish - 1].hp,
-                multiple:Data.FishInfo.fish[random_fish - 1].multiple
+                multiple:Data.FishInfo.fish[random_fish - 1].multiple,
+                special:false
             }
             this.fish = instantiate(this.fishPrefab);
             this.fish.getComponent("fish").setData(msg);
@@ -141,25 +146,29 @@ export class game extends Component {
         let random_fish = this.weightedPick(Data.FishInfo.fish);
         let msg = {
             id:random_fish,
+            name:Data.FishInfo.fish[random_fish - 1].name,
             hp:Data.FishInfo.fish[random_fish - 1].hp,
-            multiple:Data.FishInfo.fish[random_fish - 1].multiple
+            multiple:Data.FishInfo.fish[random_fish - 1].multiple,
+            special:false
         }
         this.fish = instantiate(this.fishPrefab);
         this.fish.getComponent("fish").setData(msg);
         this.fishNode.addChild(this.fish);
     }
 
-    // createSpecialFish(){
-    //     let specialID = 9;
-    //     let msg = {
-    //         id:specialID,
-    //         hp:Data.FishInfo.fish[specialID - 1].hp,
-    //         multiple:Data.FishInfo.fish[specialID - 1].multiple
-    //     }
-    //     this.fish = instantiate(this.fishPrefab);
-    //     this.fish.getComponent("fish").setData(msg);
-    //     this.fishNode.addChild(this.fish);
-    // }
+    createSpecialFish(){
+        let specialID = Math.floor(Math.random() * Data.FishInfo.special_fish.length);
+        let msg = {
+            id:specialID,
+            name:Data.FishInfo.special_fish[specialID].name,
+            hp:Data.FishInfo.special_fish[specialID].hp,
+            multiple:Data.FishInfo.special_fish[specialID].multiple,
+            special:true
+        }
+        this.fish = instantiate(this.fishPrefab);
+        this.fish.getComponent("fish").setData(msg);
+        this.fishNode.addChild(this.fish);
+    }
 
     runWave(){
         this.wavePos.x -= 1;

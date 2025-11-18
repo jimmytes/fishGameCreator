@@ -42,6 +42,10 @@ export class soundManager extends Component {
         return this.MusicAudioSource.play();
     }
 
+    public stopMusic(){
+        this.MusicAudioSource.stop();
+    }
+
     public playSFX(name, loop = false) {
         const index = this._getAudioIndex(name);
         if (index === -1) {

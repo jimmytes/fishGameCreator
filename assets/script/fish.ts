@@ -21,7 +21,8 @@ export class fish extends Component {
         multiple:null,
         pos:null,
         width:null,
-        height:null
+        height:null,
+        special:null
     }
     private bulletHitRecord = [];
     public targetFishFlag = false;
@@ -29,6 +30,8 @@ export class fish extends Component {
     private sound = null;
     private lazerHitTime = 0;
     private lazerHitGap = 0.15;
+    private specialFishRound = 0;//特殊魚只來回游3次
+    private specialFishRoundLimit = 3;
     onLoad(){
         EventController.receiveEvent("auto_Target",this.clickEnable,this)
     }
@@ -60,35 +63,40 @@ export class fish extends Component {
         const screenH = Data.Game.Screen_Height;
         
         // 決定從哪一邊進來：0=上, 1=下, 2=左, 3=右
-        const side = Math.floor(Math.random() * 4);
-        
+        let side = Math.floor(Math.random() * 4);
+        if(msg.special == true){
+            side = 2;
+        }
         let spawnX = 0;
         let spawnY = 0;
 
-        this.fish_info.fishname = "fish" + msg.id;
+        this.fish_info.fishname = msg.name;
         this.fish_info.width = this.node.getChildByName(this.fish_info.fishname).getComponent(UITransform).width;
         this.fish_info.height = this.node.getChildByName(this.fish_info.fishname).getComponent(UITransform).height;
 
         switch (side) {
             case 0: // 上方
                 spawnX = Math.random() * screenW - screenW / 2;
-                spawnY = screenH / 2 + this.fish_info.width; // 超出螢幕 100px
+                spawnY = screenH / 2 + (this.fish_info.width / 2);
                 break;
             case 1: // 下方
                 spawnX = Math.random() * screenW - screenW / 2;
-                spawnY = -(screenH / 2) - this.fish_info.width;
+                spawnY = -(screenH / 2) - (this.fish_info.width / 2);
                 break;
             case 2: // 左側
-                spawnX = -(screenW / 2) - this.fish_info.width;
+                spawnX = -(screenW / 2) - (this.fish_info.width / 2);
                 spawnY = Math.random() * screenH - screenH / 2;
                 break;
             case 3: // 右側
-                spawnX = screenW / 2 + this.fish_info.width;
+                spawnX = screenW / 2 + (this.fish_info.width / 2);
                 spawnY = Math.random() * screenH - screenH / 2;
                 break;
         }
 
         let random_angle = Math.floor(Math.random() * 361);
+        if(msg.special == true){
+            random_angle = 180;
+        }
         let radius = random_angle * Math.PI / 180;
         let direction = new Vec2(Math.cos(radius),Math.sin(radius));
         // let collider = this.node.getChildByName(this.fish_info.fishname).getComponent(Collider2D);
@@ -112,6 +120,8 @@ export class fish extends Component {
         this.fish_info.multiple = msg.multiple;
         this.fish_info.speed = 1;
         this.fish_info.pos = this.node.getPosition();
+        this.fish_info.special = msg.special;
+        this.node.getChildByName(this.fish_info.fishname).getComponent(Button).interactable = Data.Game.Auto_Target;
         this.create_flag = true;
     }
 
@@ -142,6 +152,7 @@ export class fish extends Component {
             tween(opacity)
             .to(3, { opacity: 0 })
             .call(() => {
+                this.specialFishTimesUp();
                 this.node.destroy();
                 EventController.sendEvent("createNewFish","");     
             })
@@ -157,24 +168,44 @@ export class fish extends Component {
         this.fish_info.pos.x -= this.fish_info.direction.x * this.fish_info.speed;
         this.fish_info.pos.y -= this.fish_info.direction.y * this.fish_info.speed;
         this.node.setPosition(this.fish_info.pos.x,this.fish_info.pos.y);
-        if(this.fish_info.pos.x > (Data.Game.Screen_Width / 2) + this.fish_info.width){
-            this.fish_info.pos.x = -(Data.Game.Screen_Width / 2) - this.fish_info.width
+        if(this.fish_info.pos.x > (Data.Game.Screen_Width / 2) + (this.fish_info.width / 2)){
+            if(this.fish_info.special == true){
+                this.fish_info.direction.x *= -1;
+                this.node.setScale(-1,-1);
+                this.specialFishRound++;
+                if(this.specialFishRound >= this.specialFishRoundLimit){
+                    this.specialFishTimesUp();
+                }
+            }
+            else{
+                this.fish_info.pos.x = -(Data.Game.Screen_Width / 2) - (this.fish_info.width / 2)
+            }
         }
-        if(this.fish_info.pos.x < -(Data.Game.Screen_Width / 2) - this.fish_info.width){
-            this.fish_info.pos.x = (Data.Game.Screen_Width / 2) + this.fish_info.width
+        if(this.fish_info.pos.x < -(Data.Game.Screen_Width / 2) - (this.fish_info.width / 2)){
+            if(this.fish_info.special == true){
+                this.fish_info.direction.x *= -1;
+                this.node.setScale(1,-1);
+                this.specialFishRound++;
+                if(this.specialFishRound >= this.specialFishRoundLimit){
+                    this.specialFishTimesUp();
+                }
+            }
+            else{
+                this.fish_info.pos.x = (Data.Game.Screen_Width / 2) + (this.fish_info.width / 2)
+            }
         }
-        if(this.fish_info.pos.y > (Data.Game.Screen_Height / 2) + this.fish_info.height){
-            this.fish_info.pos.y = -(Data.Game.Screen_Height / 2) - this.fish_info.height
+        if(this.fish_info.pos.y > (Data.Game.Screen_Height / 2) + (this.fish_info.width / 2)){
+            this.fish_info.pos.y = -(Data.Game.Screen_Height / 2) - (this.fish_info.width / 2)
         }
-        if(this.fish_info.pos.y < -(Data.Game.Screen_Height / 2) - this.fish_info.height){
-            this.fish_info.pos.y = (Data.Game.Screen_Height / 2) + this.fish_info.height
+        if(this.fish_info.pos.y < -(Data.Game.Screen_Height / 2) - (this.fish_info.width / 2)){
+            this.fish_info.pos.y = (Data.Game.Screen_Height / 2) + (this.fish_info.width / 2)
         }
 
 
         if(this.targetFishFlag == true){
             Data.Game.Target_FishPos = this.fish_info.pos;
-            if(this.fish_info.pos.x > (Data.Game.Screen_Width / 2) || 
-               this.fish_info.pos.x < -(Data.Game.Screen_Width / 2) || 
+            if(this.fish_info.pos.x > (Data.Game.Screen_Width / 2) + (this.fish_info.width / 2) || 
+               this.fish_info.pos.x < -(Data.Game.Screen_Width / 2) - (this.fish_info.width / 2) || 
                this.fish_info.pos.y > (Data.Game.Screen_Height / 2) || 
                this.fish_info.pos.y < -(Data.Game.Screen_Height / 2)){
                 EventController.sendEvent("reset_fish","");     
@@ -230,6 +261,12 @@ export class fish extends Component {
         this.scheduleOnce(function(){
             this.node.getChildByName(this.fish_info.fishname).getComponent(Sprite).color = new Color(255,255,255);
         },0.1)
+    }
+
+    specialFishTimesUp(){//趟數到了特殊魚刪除
+        this.node.destroy();
+        this.sound.stopMusic();
+        this.sound.playMusic("normal_bgm",true);
     }
 }
 
