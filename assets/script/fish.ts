@@ -165,6 +165,7 @@ export class fish extends Component {
     }
 
     moveFish(){
+        if(Data.Game.Frozen_Status == true)return;//冰凍狀態
         this.fish_info.pos.x -= this.fish_info.direction.x * this.fish_info.speed;
         this.fish_info.pos.y -= this.fish_info.direction.y * this.fish_info.speed;
         this.node.setPosition(this.fish_info.pos.x,this.fish_info.pos.y);
@@ -218,7 +219,7 @@ export class fish extends Component {
     }
 
     clickFish(){
-        let credit = this.Game.checkCredit();
+        let credit = this.Game.checkCredit("lazer");
         if(credit == false)return;
         EventController.sendEvent("reset_fish","");     
         this.targetFishFlag = true;
@@ -228,7 +229,7 @@ export class fish extends Component {
 
     lazerHitFish(){
         
-        this.Game.checkCredit();
+        this.Game.checkCredit("lazer");
         this.fish_info.hp--;
         this.bulletHitRecord.push(Data.BetInfo.betTable[Data.PlayerInfo.nowBetIndex])
         if(this.fish_info.hp == 0){

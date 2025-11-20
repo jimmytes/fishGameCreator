@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Prefab, instantiate, PhysicsSystem2D, v2, Vec2, Vec3, UITransform, Sprite, SpriteAtlas, EventTouch, log } from 'cc';
+import { _decorator, Component, Node, Prefab, instantiate, PhysicsSystem2D, v2, Vec2, Vec3, UITransform, Sprite, SpriteAtlas, Button, EventTouch, log } from 'cc';
 import { Data } from './DataController';
 import { EventController } from './EventController';
 import { soundManager } from './soundManager';
@@ -26,12 +26,14 @@ export class game extends Component {
     targetNode: Node = null;
     @property([Node])
     public players: Node[] = [];
-    @property(Prefab)
-    popUIPrefab: Prefab = null;
     @property(Node)
     fishIconNode: Node = null;
     @property({ type: SpriteAtlas })
     fishAtlas: SpriteAtlas | null = null;
+    @property(Button)
+    frozenButton: Button = null;
+    @property(Node)
+    frozenCountdownNode: Node = null;
     private fish = null;
     private bullet = null;
     private wavePos = new Vec2(-640,360);
@@ -43,7 +45,6 @@ export class game extends Component {
     private selfPlayer = null;
     private otherPlayer = null;
     private sound = null;
-    private popUI = null;
     public static instance: game;
 
     start() {
@@ -61,9 +62,6 @@ export class game extends Component {
         this.initFish();
         this.waveSprite.setPosition(-640,360)
         this.sound = soundManager.instance;
-
-        this.popUI = instantiate(this.popUIPrefab);
-        this.node.addChild(this.popUI);
 
         App.initLanguage(Data.Game.RES_LANGUAGE);
         this.sound.playMusic("normal_bgm",true);
@@ -248,10 +246,33 @@ export class game extends Component {
         const scale = Math.min(icon_box.x / icon_pic.width, icon_box.y / icon_pic.height);
         this.fishIconNode.setScale(scale,scale,1);
     }
+    
+    onClickFrozen(){
+        let credit = this.checkCredit("frozen");
+        if(credit == false)return;
+
+        this.frozenButton.interactable = false;
+        Data.Game.Frozen_Status = true;
+        this.sound.playSFX("frozen",false);
+
+        let gap = 1 / 100;
+        let count = 1;
+        let repeat = 100;
+        let interval = Data.Game.Frozen_Time / repeat;
+        this.schedule(function(){
+            this.frozenCountdownNode.getComponent(Sprite).fillRange = count;
+            if(count <= 0){
+                Data.Game.Frozen_Status = false;
+                this.frozenButton.interactable = true;
+            }
+            count -= gap;
+        },interval,repeat,0.01)
+        
+    }
 
     createBullet(worldPos){
         if(Data.Game.Auto_Target == true)return;
-        let credit = this.checkCredit();
+        let credit = this.checkCredit("bullet");
         if(credit == false)return;
 
         const startPos = Data.PlayerInfo.players["player" + Data.PlayerInfo.selfID].bullet_StartPos;
@@ -276,10 +297,16 @@ export class game extends Component {
 
     }
     
-    public checkCredit(){
-        let credit = Data.PlayerInfo.selfCredit - Data.BetInfo.betTable[Data.PlayerInfo.nowBetIndex];
+    public checkCredit(status){
+        let credit = null
+        if(status == "frozen"){
+            credit = Data.PlayerInfo.selfCredit - 30;
+        }
+        else{
+            credit = Data.PlayerInfo.selfCredit - Data.BetInfo.betTable[Data.PlayerInfo.nowBetIndex];
+        }
         if(credit < 0){
-            this.popUI.getComponent("popUI").showPopUI('104001');
+            App.ResManager.showUI('popUI','104001')
             this.resetFishTarget();
             return false
         }

@@ -1,4 +1,6 @@
 import { _decorator, Component, Node, director, ProgressBar  } from 'cc';
+import { App } from './App';
+
 const { ccclass, property } = _decorator;
 
 @ccclass('login')
@@ -10,6 +12,7 @@ export class login extends Component {
     }
     
     onLoad(){
+        App.init();
         this.progressBar.progress = 0;
         this.preloadGameScene()
     }

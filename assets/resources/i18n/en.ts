@@ -5,6 +5,8 @@ export const languages = {
     // POP UI
     "104001":"Insufficient balance",
     "104002":"network error",
+    "104003":"Will it cost 30 to use Freeze?",
+    "104004":"Do not remind me"
 };
 
 if (!win.languages) {
