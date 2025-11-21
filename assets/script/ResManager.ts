@@ -5,7 +5,10 @@ const { ccclass, property } = _decorator;
 
 @ccclass('ResManager')
 export class ResManager{
-    public prefabs: { [key: string]: Node } = {};
+    private prefabsClass: { [key: string]: { new(...args:any[]): Component } } = {//用於儲存個個prefabs的class
+        popUI: popUI,
+    };
+    public prefabs: { [key: string]: Node } = {};//用於儲存實例化的prefab
 
     constructor() {
         this.init();
@@ -37,7 +40,8 @@ export class ResManager{
 
     showUI(name,content){
         let pb = this.addCurrentScene(name);
-        pb.getComponent(popUI).showUI(content)
+        const comp = pb.getComponent(this.prefabsClass[name]);
+        (comp as any).showUI(content);
     }
 
     addCurrentScene(name){
@@ -49,8 +53,9 @@ export class ResManager{
         const node = instantiate(this.prefabs[name]);
         scene.addChild(node);
 
-        if(node.getComponent(popUI)){
-            node.getComponent(popUI).hideUI();
+        if(node.getComponent(this.prefabsClass[name])){
+            const comp = node.getComponent(this.prefabsClass[name]);
+            (comp as any).hideUI();
         }
         return node;
     }

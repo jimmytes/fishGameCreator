@@ -8,8 +8,7 @@ export class popUI extends Component {
     @property(Node)
     chooseNode: Node = null;
     start() {
-        //this.node.active = false;
-        log("popUI create")
+        
     }
 
     update(deltaTime: number) {
