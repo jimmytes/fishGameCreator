@@ -16,6 +16,7 @@ export namespace Data {
         public static Target_FishPos = null;
         public static Frozen_Status:boolean = false;
         public static Frozen_Time:number = 10;
+        public static Frozen_Hit:boolean = true;
     }
 
     export class FishInfo {

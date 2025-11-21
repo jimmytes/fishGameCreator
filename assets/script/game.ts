@@ -79,7 +79,8 @@ export class game extends Component {
         this.node.on(Node.EventType.TOUCH_END, this.onTouchEnd, this);
         this.node.on(Node.EventType.TOUCH_CANCEL, this.onTouchCancel, this);
         EventController.receiveEvent("createNewFish",this.createNewFish,this);
-        EventController.receiveEvent("reset_fish",this.resetFishTarget,this)
+        EventController.receiveEvent("reset_fish",this.resetFishTarget,this);
+        EventController.receiveEvent("hit",this.onClickFrozen,this);
         this.setPlayersData(Data.PlayerInfo);
     }
 
@@ -247,27 +248,31 @@ export class game extends Component {
         this.fishIconNode.setScale(scale,scale,1);
     }
     
-    onClickFrozen(){
+    onClickFrozen(customData){
         let credit = this.checkCredit("frozen");
         if(credit == false)return;
-
-        this.frozenButton.interactable = false;
-        Data.Game.Frozen_Status = true;
-        this.sound.playSFX("frozen",false);
-
-        let gap = 1 / 100;
-        let count = 1;
-        let repeat = 100;
-        let interval = Data.Game.Frozen_Time / repeat;
-        this.schedule(function(){
-            this.frozenCountdownNode.getComponent(Sprite).fillRange = count;
-            if(count <= 0){
-                Data.Game.Frozen_Status = false;
-                this.frozenButton.interactable = true;
-            }
-            count -= gap;
-        },interval,repeat,0.01)
         
+        if(customData == 'confirm' || Data.Game.Frozen_Hit == false){
+            this.frozenButton.interactable = false;
+            Data.Game.Frozen_Status = true;
+            this.sound.playSFX("frozen",false);
+
+            let gap = 1 / 100;
+            let count = 1;
+            let repeat = 100;
+            let interval = Data.Game.Frozen_Time / repeat;
+            this.schedule(function(){
+                this.frozenCountdownNode.getComponent(Sprite).fillRange = count;
+                if(count <= 0){
+                    Data.Game.Frozen_Status = false;
+                    this.frozenButton.interactable = true;
+                }
+                count -= gap;
+            },interval,repeat,0.01)
+        }
+        else{
+            App.ResManager.showUI('hitUI','104003');
+        }
     }
 
     createBullet(worldPos){

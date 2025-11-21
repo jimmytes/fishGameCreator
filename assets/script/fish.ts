@@ -165,7 +165,12 @@ export class fish extends Component {
     }
 
     moveFish(){
-        if(Data.Game.Frozen_Status == true)return;//冰凍狀態
+        if(Data.Game.Frozen_Status == true){//冰凍狀態
+            if(this.targetFishFlag == true){
+                Data.Game.Target_FishPos = this.fish_info.pos;
+            }
+            return;
+        }
         this.fish_info.pos.x -= this.fish_info.direction.x * this.fish_info.speed;
         this.fish_info.pos.y -= this.fish_info.direction.y * this.fish_info.speed;
         this.node.setPosition(this.fish_info.pos.x,this.fish_info.pos.y);

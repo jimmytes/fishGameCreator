@@ -1,5 +1,6 @@
 import { _decorator, Component, Node, director, instantiate, Prefab, resources, log } from 'cc';
 import { popUI } from './popUI';
+import { hitUI } from './hitUI';
 
 const { ccclass, property } = _decorator;
 
@@ -7,6 +8,7 @@ const { ccclass, property } = _decorator;
 export class ResManager{
     private prefabsClass: { [key: string]: { new(...args:any[]): Component } } = {//用於儲存個個prefabs的class
         popUI: popUI,
+        hitUI: hitUI
     };
     public prefabs: { [key: string]: Node } = {};//用於儲存實例化的prefab
 
@@ -16,7 +18,7 @@ export class ResManager{
 
     async init(){
         try{
-            const reslist = ['prefab/popUI']
+            const reslist = ['prefab/popUI','prefab/hitUI']
             const prefabs = await this.loadPrefabs(reslist);
 
             for (const prefab of prefabs) {

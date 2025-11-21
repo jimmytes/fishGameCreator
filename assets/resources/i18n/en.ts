@@ -6,7 +6,11 @@ export const languages = {
     "104001":"Insufficient balance",
     "104002":"network error",
     "104003":"Will it cost 30 to use Freeze?",
-    "104004":"Do not remind me"
+    "104004":"Do not remind me",
+    
+    // UI
+    "105001":"Target",
+    "105002":"Frozen",
 };
 
 if (!win.languages) {

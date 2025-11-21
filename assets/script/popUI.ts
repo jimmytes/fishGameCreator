@@ -5,8 +5,6 @@ const { ccclass, property } = _decorator;
 
 @ccclass('popUI')
 export class popUI extends Component {
-    @property(Node)
-    chooseNode: Node = null;
     start() {
         
     }
@@ -16,7 +14,6 @@ export class popUI extends Component {
     }
 
     public showUI(msg){
-        this.chooseNode.active = false;
         const localizedLabel = this.node.getChildByName("content").getComponent(LocalizedLabel);
         localizedLabel.key = msg;
         localizedLabel.updateLabel();
@@ -24,22 +21,6 @@ export class popUI extends Component {
     }
 
     public hideUI(){
-        this.node.active = false;
-    }
-
-
-    public hidePopUI(){
-        this.chooseNode.active = false;
-        this.node.active = false;
-    }
-    
-    public showFrozenHit(){
-        this.node.getChildByName("content").active = false
-        this.chooseNode.active = true;
-    }
-
-    clickChooseButton(event,customData){
-        log(customData)
         this.node.active = false;
     }
 }
