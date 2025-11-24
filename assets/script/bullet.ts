@@ -1,5 +1,4 @@
 import { _decorator, Component, Node, Sprite, Collider2D, Contact2DType, IPhysics2DContact, log, tween, Vec3} from 'cc';
-import { EventController } from './EventController';
 import { Data } from './DataController';
 
 const { ccclass, property } = _decorator;

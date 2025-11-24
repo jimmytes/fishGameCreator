@@ -1,7 +1,5 @@
 import { _decorator, Component, Node, Prefab, instantiate, PhysicsSystem2D, v2, Vec2, Vec3, UITransform, Sprite, SpriteAtlas, Button, EventTouch, log } from 'cc';
 import { Data } from './DataController';
-import { EventController } from './EventController';
-import { soundManager } from './soundManager';
 import { App } from './App';
 import { fish } from './fish';
 
@@ -44,7 +42,6 @@ export class game extends Component {
     private gameDuration = 0;
     private selfPlayer = null;
     private otherPlayer = null;
-    private sound = null;
     public static instance: game;
 
     start() {
@@ -61,10 +58,9 @@ export class game extends Component {
         system.positionIterations = 8;
         this.initFish();
         this.waveSprite.setPosition(-640,360)
-        this.sound = soundManager.instance;
 
         App.initLanguage(Data.Game.RES_LANGUAGE);
-        this.sound.playMusic("normal_bgm",true);
+        App.soundManager.playMusic("normal_bgm",true);        
     }
 
     onLoad(){
@@ -78,9 +74,9 @@ export class game extends Component {
         this.node.on(Node.EventType.MOUSE_MOVE, this.onTouchMove, this);
         this.node.on(Node.EventType.TOUCH_END, this.onTouchEnd, this);
         this.node.on(Node.EventType.TOUCH_CANCEL, this.onTouchCancel, this);
-        EventController.receiveEvent("createNewFish",this.createNewFish,this);
-        EventController.receiveEvent("reset_fish",this.resetFishTarget,this);
-        EventController.receiveEvent("hit",this.onClickFrozen,this);
+        App.EventController.receiveEvent("createNewFish",this.createNewFish,this);
+        App.EventController.receiveEvent("reset_fish",this.resetFishTarget,this);
+        App.EventController.receiveEvent("hit",this.onClickFrozen,this);
         this.setPlayersData(Data.PlayerInfo);
     }
 
@@ -107,8 +103,8 @@ export class game extends Component {
         if(this.gameDuration >= 300){//5分鐘出一條特殊魚
             this.gameDuration = 0;
             this.createSpecialFish();
-            this.sound.stopMusic();
-            this.sound.playMusic("feature_bgm",true);
+            App.soundManager.stopMusic();
+            App.soundManager.playMusic("feature_bgm",true);
         }
     }
 
@@ -222,7 +218,7 @@ export class game extends Component {
     
     onClickAutoTarget(){
         Data.Game.Auto_Target = !Data.Game.Auto_Target;
-        EventController.sendEvent("auto_Target",Data.Game.Auto_Target);
+        App.EventController.sendEvent("auto_Target",Data.Game.Auto_Target);
         if(Data.Game.Auto_Target == false){
             this.resetFishTarget()
         }   
@@ -234,7 +230,7 @@ export class game extends Component {
             target.targetFishFlag = false;
         }
         Data.Game.Target_FishPos = null;
-        this.sound.stopSFX();
+        App.soundManager.stopSFX("lazer");
         this.fishIconNode.active = false;
     }
 
@@ -255,7 +251,7 @@ export class game extends Component {
         if(customData == 'confirm' || Data.Game.Frozen_Hit == false){
             this.frozenButton.interactable = false;
             Data.Game.Frozen_Status = true;
-            this.sound.playSFX("frozen",false);
+            App.soundManager.playSFX("frozen",false);
 
             let gap = 1 / 100;
             let count = 1;
@@ -296,9 +292,8 @@ export class game extends Component {
         }
         this.bulletNode.addChild(this.bullet);
         this.bullet.getComponent("bullet").setData(msg);
-        this.sound.playSFX("shot",false);
-        // this.selfPlayer.getComponent("player").setCredit(Data.PlayerInfo.selfCredit);
-        EventController.sendEvent("cannon_effect",nowMousePos)
+        App.soundManager.playSFX("shot",false);
+        App.EventController.sendEvent("cannon_effect",nowMousePos)
 
     }
     

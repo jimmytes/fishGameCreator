@@ -12,12 +12,16 @@ export class EventController extends Component {
         
     }
 
-    public static sendEvent(eventName,args){
+    public sendEvent(eventName,args){
         eventTarget.emit(eventName,args);
     }
 
-    public static receiveEvent(eventName,callBack,obj){
+    public receiveEvent(eventName,callBack,obj){
         eventTarget.on(eventName, callBack, obj);
+    }
+
+    public closeEvent(eventName,callBack,obj){
+        eventTarget.off(eventName, callBack, obj);
     }
 }
 

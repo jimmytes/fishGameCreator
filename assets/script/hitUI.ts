@@ -1,6 +1,6 @@
 import { _decorator, Component, Node, Toggle, log } from 'cc';
 import { Data } from './DataController';
-import { EventController } from './EventController';
+import { App } from './App';
 import { LocalizedLabel } from 'db://i18n/LocalizedLabel';
 
 const { ccclass, property } = _decorator;
@@ -31,7 +31,7 @@ export class hitUI extends Component {
 
     clickButton(event,customData){
         if(customData == 'confirm'){
-            EventController.sendEvent("hit","confirm");
+            App.EventController.sendEvent("hit","confirm");
         }
         this.node.active = false;
     }

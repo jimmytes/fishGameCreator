@@ -1,6 +1,6 @@
 import { _decorator, Component, Node, Label, Animation, tween, Vec2, Vec3, log } from 'cc';
 import { Data } from './DataController';
-import { EventController } from './EventController';
+import { App } from './App';
 
 const { ccclass, property } = _decorator;
 
@@ -23,7 +23,7 @@ export class player extends Component {
     private credit = null;
     start() {
         this.cannon_pos = this.cannonNode.getPosition();
-        EventController.receiveEvent("cannon_effect",this.cannonEffect,this)
+        App.EventController.receiveEvent("cannon_effect",this.cannonEffect,this)
     }
 
     setData(msg){

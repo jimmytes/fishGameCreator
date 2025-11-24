@@ -1,9 +1,8 @@
 import { _decorator, Component, Node, Sprite, Button, tween, UIOpacity, Color, UITransform, Vec2, SpriteAtlas, Collider2D, Contact2DType, IPhysics2DContact, log} from 'cc';
+import { App } from './App';
 import { Data } from './DataController';
-import { EventController } from './EventController';
 import { bullet } from './bullet';
 import { game } from './game';
-import { soundManager } from './soundManager';
 
 const { ccclass, property } = _decorator;
 
@@ -27,17 +26,15 @@ export class fish extends Component {
     private bulletHitRecord = [];
     public targetFishFlag = false;
     private Game = null;
-    private sound = null;
     private lazerHitTime = 0;
     private lazerHitGap = 0.15;
     private specialFishRound = 0;//特殊魚只來回游3次
     private specialFishRoundLimit = 3;
     onLoad(){
-        EventController.receiveEvent("auto_Target",this.clickEnable,this)
+        App.EventController.receiveEvent("auto_Target",this.clickEnable,this)
     }
 
     start() {
-        this.sound = soundManager.instance;
         this.Game = game.instance;
 
     }
@@ -154,7 +151,7 @@ export class fish extends Component {
             .call(() => {
                 this.specialFishTimesUp();
                 this.node.destroy();
-                EventController.sendEvent("createNewFish","");     
+                App.EventController.sendEvent("createNewFish",""); 
             })
             .start();
         }
@@ -214,7 +211,7 @@ export class fish extends Component {
                this.fish_info.pos.x < -(Data.Game.Screen_Width / 2) - (this.fish_info.width / 2) || 
                this.fish_info.pos.y > (Data.Game.Screen_Height / 2) || 
                this.fish_info.pos.y < -(Data.Game.Screen_Height / 2)){
-                EventController.sendEvent("reset_fish","");     
+                App.EventController.sendEvent("reset_fish","");     
             }
         }
     }
@@ -226,9 +223,9 @@ export class fish extends Component {
     clickFish(){
         let credit = this.Game.checkCredit("lazer");
         if(credit == false)return;
-        EventController.sendEvent("reset_fish","");     
+        App.EventController.sendEvent("reset_fish","");     
         this.targetFishFlag = true;
-        this.sound.playSFX("lazer",true);
+        App.soundManager.playSFX("lazer",true);
         this.Game.setFishIcon(this.fish_info.fishname)
     }
 
@@ -238,7 +235,7 @@ export class fish extends Component {
         this.fish_info.hp--;
         this.bulletHitRecord.push(Data.BetInfo.betTable[Data.PlayerInfo.nowBetIndex])
         if(this.fish_info.hp == 0){
-            EventController.sendEvent("reset_fish","");
+            App.EventController.sendEvent("reset_fish","");
             let sum = 0;
             for(let i = 0; i < this.bulletHitRecord.length; i++){
                 sum += this.bulletHitRecord[i];
@@ -259,7 +256,7 @@ export class fish extends Component {
             .to(3, { opacity: 0 })
             .call(() => {
                 this.node.destroy();
-                EventController.sendEvent("createNewFish","");     
+                App.EventController.sendEvent("createNewFish","");     
             })
             .start();
         }
@@ -271,8 +268,8 @@ export class fish extends Component {
 
     specialFishTimesUp(){//趟數到了特殊魚刪除
         this.node.destroy();
-        this.sound.stopMusic();
-        this.sound.playMusic("normal_bgm",true);
+        App.soundManager.stopMusic();
+        App.soundManager.playMusic("normal_bgm",true);
     }
 }
 

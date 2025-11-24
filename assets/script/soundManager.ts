@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, AudioClip, AudioSource, log } from 'cc';
+import { _decorator, Component, Node, AudioClip, AudioSource, director, log } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('soundManager')
@@ -10,18 +10,12 @@ export class soundManager extends Component {
     @property(AudioSource)
     EffectAudioSource: AudioSource = null;
     private audioMap = {};
-    public static instance: soundManager;
     start() {
 
     }
 
     onLoad() {
-        if (!soundManager.instance) {
-            soundManager.instance = this;
-        } else {
-            this.destroy();
-        }
-
+        director.addPersistRootNode(this.node);
         this.Sounds.forEach((clip, index) => {
             if (clip && clip.name) {
                 this.audioMap[clip.name] = index;
@@ -52,13 +46,28 @@ export class soundManager extends Component {
             return undefined;
         }
         
-        this.EffectAudioSource.clip = this.Sounds[index];
-        this.EffectAudioSource.loop = loop;
-        return this.EffectAudioSource.play();
+        const node = new Node(`SFX_${name}`);
+        const audio = node.addComponent(AudioSource);
+        audio.clip = this.Sounds[index];
+        audio.loop = loop;
+        audio.play();
+        this.node.addChild(node);
+        if (!loop) {//不是循環撥放的音效撥放完畢後自動銷毀
+            audio.node.once(AudioSource.EventType.ENDED, () => {
+                node.destroy();
+            });
+        }
     }
     
-    public stopSFX(){
-        this.EffectAudioSource.stop();
+    public stopSFX(name){
+        const nodeName = `SFX_${name}`;
+        const target = this.node.getChildByName(nodeName);
+
+        if (target) {
+            const audio = target.getComponent(AudioSource);
+            if (audio) audio.stop();
+            target.destroy();
+        }
     }
 
     _getAudioIndex(name) {
