@@ -5,6 +5,7 @@ export namespace Data {
 
     export class Game{
         public static DEF_GAMEID = "PSF-ON-00001";
+        public static GameToken = "";
         public static RES_LANGUAGE: string = "en";
         public static Total_Fish:number = 20;
         public static Screen_Width:number = 1280;
