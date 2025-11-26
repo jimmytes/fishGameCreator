@@ -71,7 +71,7 @@ export class game extends Component {
         }
 
         this.node.on(Node.EventType.TOUCH_START, this.onTouchStart, this);
-        this.node.on(Node.EventType.MOUSE_MOVE, this.onTouchMove, this);
+        this.node.on(Node.EventType.TOUCH_MOVE, this.onTouchMove, this);
         this.node.on(Node.EventType.TOUCH_END, this.onTouchEnd, this);
         this.node.on(Node.EventType.TOUCH_CANCEL, this.onTouchCancel, this);
         App.EventController.receiveEvent("createNewFish",this.createNewFish,this);
