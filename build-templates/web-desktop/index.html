@@ -25,6 +25,7 @@
         <canvas id="GameCanvas" width="1280" height="720" tabindex="99"></canvas>
       </div>
     </div>
+    <div id="rotateMask" style="display:none;"></div>
     <!-- Polyfills bundle. -->
 <script src="src/polyfills.bundle.js" charset="utf-8"> </script>
 
@@ -62,8 +63,30 @@
         gameDiv.style.left = "50%";
         gameDiv.style.top = "50%";
         gameDiv.style.transform = "translate(-50%, -50%)";
+
+        const mask = document.getElementById("rotateMask");
+        const moblie = isMobile();
+        if(moblie){
+          console.log(window.orientation)
+          if(window.orientation == 90 || window.orientation == -90){
+            mask.style.display = "none";
+          }
+          else{
+            mask.style.display = "flex";
+          }
+        }
+
+        //const isLandscape = window.innerWidth > window.innerHeight;
+        // if (isLandscape) {
+        //     mask.style.display = "none"; // 移除遮罩
+        // } else {
+        //     mask.style.display = "flex"; // 顯示遮罩
+        // }
     }
 
+    function isMobile() {
+        return /Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent);
+    }
     window.addEventListener("resize", resizeGame);
     window.addEventListener("orientationchange", resizeGame);
     resizeGame();

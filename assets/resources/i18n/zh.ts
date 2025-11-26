@@ -12,6 +12,7 @@ export const languages = {
     // UI
     "105001":"锁定",
     "105002":"冰冻",
+    "105003":"请将您的装置旋转为横式"
 };
 
 if (!win.languages) {

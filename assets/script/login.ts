@@ -2,6 +2,7 @@ import { _decorator, Component, Node, director, ProgressBar  } from 'cc';
 import { App } from './App';
 import {CusHttp} from "./CusHttp";
 import {Connect} from "./ConnectConfig";
+import { Data } from './DataController';
 
 const { ccclass, property } = _decorator;
 
@@ -16,6 +17,7 @@ export class login extends Component {
     }
     
     onLoad(){
+        App.initLanguage(Data.Game.RES_LANGUAGE);
         App.init();
         this.progressBar.progress = 0;
         this.preloadGameScene();

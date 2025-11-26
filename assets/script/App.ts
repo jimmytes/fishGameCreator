@@ -20,9 +20,14 @@ export class App {
         if(audioMng){
             this.soundManager = audioMng.getComponent('soundManager')
         }
+
+        const div = document.getElementById("rotateMask");
+        if(div){
+            div.innerText = i18n.t('105003')
+        }
     }
             
-
+    
     static initLanguage(lang: string) {
         i18n.init(lang);
         i18n.updateSceneRenderers();

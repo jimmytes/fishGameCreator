@@ -43,6 +43,24 @@ canvas {
   height: 100%;
 }
 
+#rotateMask {
+      display: none; /* 預設隱藏 */
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.85);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 5vw;
+      font-family: Arial, sans-serif;
+      z-index: 99999;
+      pointer-events: auto; /* 遮罩阻擋下層所有點擊 */
+  }
+
 :root {
   --safe-top: env(safe-area-inset-top);
   --safe-right: env(safe-area-inset-right);

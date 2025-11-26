@@ -59,7 +59,6 @@ export class game extends Component {
         this.initFish();
         this.waveSprite.setPosition(-640,360)
 
-        App.initLanguage(Data.Game.RES_LANGUAGE);
         App.soundManager.playMusic("normal_bgm",true);        
     }
 
