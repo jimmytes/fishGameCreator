@@ -43,15 +43,25 @@
         const wh = window.innerHeight;
 
         const gameDiv = document.getElementById("GameDiv");
+        const canvas = document.getElementById("GameCanvas");
 
-        // 讓 GameDiv 保持 1280×720 但可縮放
         const scale = Math.min(ww / DESIGN_WIDTH, wh / DESIGN_HEIGHT);
 
+        // 設置放大後的實際像素，不是 transform！
+        const newW = DESIGN_WIDTH * scale;
+        const newH = DESIGN_HEIGHT * scale;
+
+        gameDiv.style.width = newW + "px";
+        gameDiv.style.height = newH + "px";
+
+        canvas.style.width = newW + "px";
+        canvas.style.height = newH + "px";
+
+        // 置中
         gameDiv.style.position = "absolute";
         gameDiv.style.left = "50%";
         gameDiv.style.top = "50%";
-        gameDiv.style.transform = `translate(-50%, -50%) scale(${scale})`;
-        gameDiv.style.transformOrigin = "center center";
+        gameDiv.style.transform = "translate(-50%, -50%)";
     }
 
     window.addEventListener("resize", resizeGame);

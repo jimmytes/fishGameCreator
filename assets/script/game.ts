@@ -184,6 +184,7 @@ export class game extends Component {
         nowMousePos = worldPos;
         this.clickFlag = true;
         this.targetNode.active = true;
+        this.targetNode.setPosition(worldPos.x - (Data.Game.Screen_Width / 2),worldPos.y - (Data.Game.Screen_Height / 2));
         if(Data.Game.Auto_Target == true){
             this.resetFishTarget()
         }
