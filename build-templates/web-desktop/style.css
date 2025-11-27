@@ -44,22 +44,29 @@ canvas {
 }
 
 #rotateMask {
-      display: none; /* 預設隱藏 */
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0, 0, 0, 0.85);
-      color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 5vw;
-      font-family: Arial, sans-serif;
-      z-index: 99999;
-      pointer-events: auto; /* 遮罩阻擋下層所有點擊 */
-  }
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.7);
+    z-index: 9999;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+
+    text-align: center;
+    white-space: normal;
+    word-break: break-word;
+    line-height: 1.4;
+    
+    font-size: 4vw;
+    color: white;
+    box-sizing: border-box;
+}
 
 :root {
   --safe-top: env(safe-area-inset-top);
