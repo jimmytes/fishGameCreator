@@ -1,8 +1,10 @@
-import { _decorator, Component, Node, director, ProgressBar  } from 'cc';
+import { _decorator, Component, Node, Label, director, ProgressBar  } from 'cc';
 import { App } from './App';
 import {CusHttp} from "./CusHttp";
 import {Connect} from "./ConnectConfig";
 import { Data } from './DataController';
+import * as i18n from 'db://i18n/LanguageData';
+
 
 const { ccclass, property } = _decorator;
 
@@ -10,8 +12,12 @@ const { ccclass, property } = _decorator;
 export class login extends Component {
     @property(ProgressBar)
     progressBar: ProgressBar = null;
+    @property(Node)
+    loadingLabel: Node = null;
     private http = null;
-
+    private dots = 0;
+    private timer = 0;
+    private interval = 0.4; // 秒
     start() {
 
     }
@@ -27,7 +33,12 @@ export class login extends Component {
     }
     
     update(deltaTime: number) {
-        
+        this.timer += deltaTime;
+        if (this.timer >= this.interval) {
+          this.timer = 0;
+          this.dots = (this.dots + 1) % 4; // 0..3
+          this.loadingLabel.getComponent(Label).string = i18n.t('106001') + '.'.repeat(this.dots);
+        }
     }
 
     preloadGameScene() {
@@ -42,7 +53,9 @@ export class login extends Component {
                     return;
                 }
                 console.log("預載完成，準備切換！");
-                director.loadScene("game");
+                this.scheduleOnce(function(){//故意延遲3秒看loading畫面之後拿掉
+                   director.loadScene("game");
+                },3)
             }
         );
     }

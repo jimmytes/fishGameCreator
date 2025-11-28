@@ -12,7 +12,10 @@ export const languages = {
     // UI
     "105001":"Target",
     "105002":"Frozen",
-    "105003":"Please rotate your device to landscape mode"
+    "105003":"Please rotate your device to landscape mode",
+    
+    //login
+    "106001":"loading"
 };
 
 if (!win.languages) {
