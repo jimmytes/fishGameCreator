@@ -8,6 +8,7 @@ export const languages = {
     "104003":"Will it cost 30 to use Freeze?",
     "104004":"Do not remind me",
     "104005":"Message",
+    "104006":"Fish Paytable",
     
     // UI
     "105001":"Target",

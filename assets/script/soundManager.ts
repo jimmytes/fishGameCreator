@@ -10,12 +10,13 @@ export class soundManager extends Component {
     @property(AudioSource)
     EffectAudioSource: AudioSource = null;
     private audioMap = {};
+    private isMute = false;
     start() {
 
     }
 
     onLoad() {
-        director.addPersistRootNode(this.node);
+        director.addPersistRootNode(this.node);//使其在login場景建立後轉換場景不會被移除
         this.Sounds.forEach((clip, index) => {
             if (clip && clip.name) {
                 this.audioMap[clip.name] = index;
@@ -50,6 +51,7 @@ export class soundManager extends Component {
         const audio = node.addComponent(AudioSource);
         audio.clip = this.Sounds[index];
         audio.loop = loop;
+        audio.volume = this.isMute ? 0:1;
         audio.play();
         this.node.addChild(node);
         if (!loop) {//不是循環撥放的音效撥放完畢後自動銷毀
@@ -68,6 +70,17 @@ export class soundManager extends Component {
             if (audio) audio.stop();
             target.destroy();
         }
+    }
+    
+    public mute(isMute: boolean) {
+        this.isMute = isMute;
+        let volume = isMute ? 0:1;
+        this.MusicAudioSource.volume = volume;
+        this.node.children.forEach((clip,index) => {
+            if(clip.name.startsWith("SFX_")){
+                clip.getComponent(AudioSource).volume = volume;
+            }
+        })
     }
 
     _getAudioIndex(name) {

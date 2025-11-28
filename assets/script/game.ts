@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Prefab, instantiate, PhysicsSystem2D, v2, Vec2, Vec3, UITransform, Sprite, SpriteAtlas, Button, EventTouch, log } from 'cc';
+import { _decorator, Component, Node, Label, Prefab, instantiate, PhysicsSystem2D, v2, Vec2, Vec3, UITransform, Sprite, SpriteAtlas, Button, EventTouch, log } from 'cc';
 import { Data } from './DataController';
 import { App } from './App';
 import { fish } from './fish';
@@ -32,6 +32,14 @@ export class game extends Component {
     frozenButton: Button = null;
     @property(Node)
     frozenCountdownNode: Node = null;
+    @property(Node)
+    delayNode: Node = null;
+    @property(Node)
+    menuNode: Node = null;
+    @property(Node)
+    soundNode: Node = null;
+    @property(Prefab)
+    helpPrefab: Prefab = null;
     private fish = null;
     private bullet = null;
     private wavePos = new Vec2(-640,360);
@@ -40,8 +48,10 @@ export class game extends Component {
     private clickGapFlag = false;
     private clickGapTime = 0;
     private gameDuration = 0;
+    private heartbeat = 0;
     private selfPlayer = null;
     private otherPlayer = null;
+    private help = null;
     public static instance: game;
 
     start() {
@@ -81,6 +91,7 @@ export class game extends Component {
 
     update(deltaTime: number) {
         this.gameDuration += deltaTime;
+        this.heartbeat += deltaTime;
         this.runWave();
         if(this.clickFlag == true){
             this.clickTime += deltaTime;
@@ -104,6 +115,12 @@ export class game extends Component {
             this.createSpecialFish();
             App.soundManager.stopMusic();
             App.soundManager.playMusic("feature_bgm",true);
+        }
+        
+        if(this.heartbeat >= 5){
+            let randomDelay = Math.floor(Math.random() * 999) + 1;
+            this.heartbeat = 0
+            this.delayNode.getChildByName("label").getComponent(Label).string = randomDelay + "ms";
         }
     }
 
@@ -322,5 +339,37 @@ export class game extends Component {
           rand -= obj.weight;
         }
    }
+
+    clickMenu(){
+        if(this.menuNode.active){
+            this.menuNode.active = false;
+        }
+        else{
+            this.menuNode.active = true;
+        }
+    }
+
+    clickHelp(){
+        if(this.help == null){
+            this.help = instantiate(this.helpPrefab);
+            this.node.addChild(this.help);
+        }
+        else{
+            this.help.active = true;
+        }
+    }
+
+    clickSound(){
+        if(this.soundNode.getChildByName("sound_icon").active){
+            this.soundNode.getChildByName("sound_icon").active = false;
+            this.soundNode.getChildByName("mute_icon").active = true;
+            App.soundManager.mute(true);
+        }
+        else{
+            this.soundNode.getChildByName("sound_icon").active = true;
+            this.soundNode.getChildByName("mute_icon").active = false;
+            App.soundManager.mute(false);
+        }
+    }
 }
 

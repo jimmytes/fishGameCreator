@@ -22,23 +22,23 @@ export namespace Data {
 
     export class FishInfo {
         public static fish = [
-            {id:1,name:'fish1',hp:50,minSpeed:1,maxSpeed:6,multiple:25,delay:210/2,weight:100},
-            {id:2,name:'fish2',hp:60,minSpeed:2,maxSpeed:7,multiple:30,delay:148/2,weight:100},
-            {id:3,name:'fish3',hp:70,minSpeed:3,maxSpeed:8,multiple:35,delay:194/2,weight:100},
-            {id:4,name:'fish4',hp:80,minSpeed:4,maxSpeed:9,multiple:40,delay:178/2,weight:100},
-            {id:5,name:'fish5',hp:90,minSpeed:5,maxSpeed:10,multiple:45,delay:188/2,weight:100},
-            {id:6,name:'fish6',hp:200,minSpeed:2,maxSpeed:6,multiple:300,delay:300/2,weight:50},
-            {id:7,name:'fish7',hp:50,minSpeed:10,maxSpeed:15,multiple:150,delay:120/2,weight:40},
-            {id:8,name:'fish10',hp:80,minSpeed:15,maxSpeed:20,multiple:90,delay:50/2,weight:80},
-            {id:9,name:'fish11',hp:100,minSpeed:3,maxSpeed:8,multiple:110,delay:204/2,weight:85},
-            {id:10,name:'fish12',hp:70,minSpeed:8,maxSpeed:12,multiple:80,delay:246/2,weight:88},
-            {id:11,name:'fish13',hp:150,minSpeed:9,maxSpeed:13,multiple:100,delay:138/2,weight:90},
-            {id:12,name:'fish14',hp:500,minSpeed:5,maxSpeed:10,multiple:1000,delay:276/2,weight:30}
+            {id:1,name:'fish1',hp:10,minSpeed:1,maxSpeed:6,multiple:2,delay:210/2,weight:100},
+            {id:2,name:'fish2',hp:15,minSpeed:2,maxSpeed:7,multiple:3,delay:148/2,weight:100},
+            {id:3,name:'fish3',hp:20,minSpeed:3,maxSpeed:8,multiple:4,delay:194/2,weight:100},
+            {id:4,name:'fish4',hp:25,minSpeed:4,maxSpeed:9,multiple:5,delay:178/2,weight:100},
+            {id:5,name:'fish5',hp:30,minSpeed:5,maxSpeed:10,multiple:6,delay:188/2,weight:100},
+            {id:6,name:'fish6',hp:35,minSpeed:2,maxSpeed:6,multiple:7,delay:300/2,weight:50},
+            {id:7,name:'fish7',hp:40,minSpeed:10,maxSpeed:15,multiple:8,delay:120/2,weight:40},
+            {id:8,name:'fish10',hp:45,minSpeed:15,maxSpeed:20,multiple:9,delay:50/2,weight:80},
+            {id:9,name:'fish11',hp:50,minSpeed:3,maxSpeed:8,multiple:10,delay:204/2,weight:85},
+            {id:10,name:'fish12',hp:75,minSpeed:8,maxSpeed:12,multiple:15,delay:246/2,weight:88},
+            {id:11,name:'fish13',hp:100,minSpeed:9,maxSpeed:13,multiple:20,delay:138/2,weight:90},
+            {id:12,name:'fish14',hp:125,minSpeed:5,maxSpeed:10,multiple:25,delay:276/2,weight:30}
         ]
 
         public static special_fish = [
-            {id:1,name:'fish8',hp:1000,minSpeed:5,maxSpeed:10,multiple:1500,delay:644/2,weight:5},
-            {id:2,name:'fish9',hp:1500,minSpeed:1,maxSpeed:3,multiple:2000,delay:950/2,weight:1},
+            {id:1,name:'fish8',hp:500,minSpeed:5,maxSpeed:10,multiple:100,delay:644/2,weight:5},
+            {id:2,name:'fish9',hp:1000,minSpeed:1,maxSpeed:3,multiple:200,delay:950/2,weight:1},
         ]
     }
 
