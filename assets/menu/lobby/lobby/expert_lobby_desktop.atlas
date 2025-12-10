@@ -1,0 +1,202 @@
+
+expert_lobby_desktop.png
+size: 825,825
+format: RGBA4444
+filter: Linear,Linear
+repeat: none
+expert/anemone
+  rotate: false
+  xy: 575, 372
+  size: 210, 124
+  orig: 210, 125
+  offset: 0, 1
+  index: -1
+expert/bubble
+  rotate: true
+  xy: 733, 670
+  size: 87, 85
+  orig: 96, 90
+  offset: 4, 3
+  index: -1
+expert/coral
+  rotate: true
+  xy: 179, 19
+  size: 142, 133
+  orig: 147, 138
+  offset: 2, 3
+  index: -1
+expert/expert_badge
+  rotate: true
+  xy: 2, 208
+  size: 287, 175
+  orig: 292, 180
+  offset: 2, 3
+  index: -1
+expert/expert_badge_lighting_1
+  rotate: false
+  xy: 575, 498
+  size: 127, 162
+  orig: 142, 172
+  offset: 2, 7
+  index: -1
+expert/expert_badge_lighting_2
+  rotate: true
+  xy: 492, 113
+  size: 158, 174
+  orig: 170, 179
+  offset: 2, 3
+  index: -1
+expert/expert_badge_lighting_3
+  rotate: true
+  xy: 2, 30
+  size: 176, 175
+  orig: 195, 180
+  offset: 9, 3
+  index: -1
+expert/expert_badge_lighting_4
+  rotate: false
+  xy: 314, 97
+  size: 176, 174
+  orig: 195, 180
+  offset: 9, 4
+  index: -1
+expert/expert_badge_lighting_5
+  rotate: false
+  xy: 575, 662
+  size: 156, 161
+  orig: 172, 169
+  offset: 9, 6
+  index: -1
+expert/expert_badge_lighting_6
+  rotate: false
+  xy: 179, 163
+  size: 133, 155
+  orig: 146, 160
+  offset: 10, 3
+  index: -1
+expert/expert_badge_lighting_7
+  rotate: true
+  xy: 314, 10
+  size: 85, 137
+  orig: 98, 148
+  offset: 10, 8
+  index: -1
+expert/expert_frame
+  rotate: false
+  xy: 2, 497
+  size: 328, 326
+  orig: 333, 348
+  offset: 2, 20
+  index: -1
+expert/mouth
+  rotate: false
+  xy: 668, 117
+  size: 101, 42
+  orig: 106, 48
+  offset: 2, 3
+  index: -1
+expert/nemo_body
+  rotate: false
+  xy: 332, 549
+  size: 241, 274
+  orig: 242, 276
+  offset: 0, 0
+  index: -1
+expert/nemo_body_lighting
+  rotate: false
+  xy: 332, 273
+  size: 241, 274
+  orig: 242, 276
+  offset: 0, 0
+  index: -1
+expert/nemo_eyeball_L
+  rotate: false
+  xy: 453, 4
+  size: 32, 53
+  orig: 37, 58
+  offset: 2, 3
+  index: -1
+expert/nemo_eyeball_R
+  rotate: true
+  xy: 733, 759
+  size: 64, 56
+  orig: 69, 61
+  offset: 2, 3
+  index: -1
+expert/nemo_fin_L
+  rotate: true
+  xy: 492, 5
+  size: 106, 113
+  orig: 108, 114
+  offset: 0, 1
+  index: -1
+expert/nemo_fin_L_lighting
+  rotate: true
+  xy: 607, 5
+  size: 106, 113
+  orig: 108, 114
+  offset: 0, 1
+  index: -1
+expert/nemo_fin_R
+  rotate: false
+  xy: 575, 273
+  size: 108, 97
+  orig: 109, 97
+  offset: 0, 0
+  index: -1
+expert/nemo_fin_R_lighting
+  rotate: true
+  xy: 722, 7
+  size: 108, 97
+  orig: 109, 97
+  offset: 0, 0
+  index: -1
+expert/nemo_pupil_L
+  rotate: false
+  xy: 791, 789
+  size: 32, 34
+  orig: 37, 39
+  offset: 2, 3
+  index: -1
+expert/nemo_pupil_R
+  rotate: false
+  xy: 453, 59
+  size: 36, 36
+  orig: 41, 41
+  offset: 2, 3
+  index: -1
+expert/nemo_upper_fin
+  rotate: false
+  xy: 179, 320
+  size: 136, 175
+  orig: 137, 176
+  offset: 0, 0
+  index: -1
+expert/seaweed_L
+  rotate: false
+  xy: 685, 161
+  size: 60, 209
+  orig: 62, 212
+  offset: 0, 3
+  index: -1
+expert/seaweed_R
+  rotate: false
+  xy: 704, 503
+  size: 115, 157
+  orig: 119, 163
+  offset: 4, 4
+  index: -1
+fl0006
+  rotate: false
+  xy: 747, 260
+  size: 52, 54
+  orig: 57, 59
+  offset: 2, 3
+  index: -1
+fl0012
+  rotate: false
+  xy: 747, 316
+  size: 54, 54
+  orig: 60, 60
+  offset: 3, 3
+  index: -1

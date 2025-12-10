@@ -1,0 +1,94 @@
+syntax = "proto3";
+package common.proto;
+
+message Header {
+    EMSGID msgid = 1;
+}
+
+enum EMSGID {
+    eReserved               = 0;
+    eActivity               = 1;
+
+    eBroadcastResult        = 100;
+    eBroadcastPlayerIn      = 101;
+    eBroadcastPlayerOut     = 102;
+    eBroadcaster            = 103;
+    eBroadcastOption        = 104;
+
+    eCentInAsk              = 200;
+    eCentInReask            = 201;
+
+    eD                      = 300;
+
+    eErrorCode              = 400;
+
+    eF                      = 500;
+
+    eGameConfigCall         = 600;
+    eGameConfigRecall       = 601;
+    eGameStripsCall         = 602;
+    eGameStripsRecall       = 603;
+    eGameRecovery           = 604;
+
+    eHeartbeatCall          = 700;
+    eHeartbeatRecall        = 701;
+
+    eI                      = 800;
+
+    eJackpotInfo            = 900;
+    eJackpotNotify          = 901;
+
+    eK                      = 1000;
+
+    eLoginCall              = 1100;
+    eLoginRecall            = 1101;
+    eLobbyConfigCall        = 1102;
+    eLobbyConfigRecall      = 1103;
+
+    eMemberInfoAsk          = 1200;
+
+    eN                      = 1300;
+
+    eOptionCall             = 1400;
+    eOptionRecall           = 1401;
+
+    eP                      = 1500;
+
+    eQ                      = 1600;
+
+    eResultCall             = 1700;
+    eResultRecall           = 1701;
+
+    eS                      = 1800;
+
+    eT                      = 1900;
+
+    eU                      = 2000;
+
+    eV                      = 2100;
+
+    eW                      = 2200;
+
+    eX                      = 2300;
+
+    eY                      = 2400;
+
+    eZ                      = 2500;
+}
+
+message Status {
+    enum Code {
+        kSuccess            = 0;
+        kInvalid            = 1;
+        kOffline            = 2;
+        kNoEnoughCredit     = 3;
+        kHostError          = 4;
+        kOutOfDate          = 5;
+        kFreeGameEnd        = 6;
+        kNoMoreBets         = 7;
+        kNoSeatAvailable    = 8;
+        kIdle               = 9;
+        kGaming             = 10;
+        kIPisSame           = 11;
+    }
+}

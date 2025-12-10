@@ -1,15 +1,53 @@
 import { _decorator, Component, Node } from 'cc';
 const { ccclass, property } = _decorator;
 
+export class Login extends Component {
+    public static loginData = {
+        backendVersion:null,
+        token:null
+    }
+    
+    public static setData(data){
+        this.loginData.backendVersion = data.backendVersion;
+        this.loginData.token = data.token;
+    }
+
+    public static getData(){
+        return this.loginData;
+    }
+}
+
+export class LobbyConfig extends Component {
+    public static LobbyConfigData = {
+        playerInfo:null,
+        roomInfo:null
+    }
+    
+    public static setData(data){
+        this.LobbyConfigData.playerInfo = data.playerInfo;
+        this.LobbyConfigData.roomInfo = data.roomInfo;
+    }
+
+    public static getData(){
+        return this.LobbyConfigData;
+    }
+}
+
 export namespace Data {
+    export class Library{
+        public static Login = Login;
+        public static LobbyConfig = LobbyConfig;
+    }
 
     export class Game{
-        public static DEF_GAMEID = "PSF-ON-00001";
+        public static DEF_GAMEID = "fFishParad";
         public static GameToken = "";
         public static RES_LANGUAGE: string = "en";
+        public static Loading_Compolete:boolean = false;
+        public static Lobby_ProtoData_Compolete:boolean = false;
         public static Total_Fish:number = 20;
-        public static Screen_Width:number = 1280;
-        public static Screen_Height:number = 720;
+        public static Screen_Width:number = 1440;
+        public static Screen_Height:number = 810;
         public static Bullet_Gap_Time:number = 0.15;
         public static Bullet_Speed:number = 2;
         public static Special_FS_GameTime:number = 30;
@@ -18,6 +56,7 @@ export namespace Data {
         public static Frozen_Status:boolean = false;
         public static Frozen_Time:number = 10;
         public static Frozen_Hit:boolean = true;
+        static readonly BALANCE_DEVISOR:number = 10000; // The balance received from BE, we will divide to this number
     }
 
     export class FishInfo {
@@ -76,4 +115,6 @@ export namespace Data {
         public static betTable = [1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90,100];
     }
 }
+
+
 

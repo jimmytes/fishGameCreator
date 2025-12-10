@@ -1,0 +1,14 @@
+syntax = "proto3";
+package heartbeat.proto;
+import "common.proto";
+
+message HeartbeatCall {
+    common.proto.EMSGID msgid               = 1;
+    int64 client_timestamp                  = 2;
+}
+
+message HeartbeatRecall {
+    common.proto.EMSGID msgid               = 1;
+    int64 client_timestamp                  = 2;
+    int64 server_timestamp                  = 3;
+}

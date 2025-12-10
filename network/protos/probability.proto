@@ -1,0 +1,84 @@
+syntax = "proto3";
+package probability.proto;
+
+import "common.proto";
+import "common_fish.proto";
+
+message HitFish {
+    string uuid                                                            = 1;    // Fish ID (unique identifier)
+    int32 symbol_id                                                        = 2;    // Fish symbol type ID
+}
+
+message HitBullet {
+    string uuid                                                            = 1;    // Bullet ID (unique identifier)
+    int32 type_id                                                          = 2;    // Bullet type 0: Normal bullet 1: Free bullet 2: Illegal bullet
+    common.fish.proto.Point target                                         = 3;    // Shooting point coordinates
+    int32 shoot_mode                                                       = 4;    // Firing mode 0:Normal 1:Auto 2:Target
+}
+
+message HitResult {
+    uint64 pay                                                             = 1;    // Win multiple of the fish
+    uint64 bet                                                             = 2;    // Bet amount
+    uint64 rate                                                            = 3;    // Bet rate
+    uint64 multiplier                                                      = 4;    // FS Multiplier
+    uint64 player_cent                                                     = 5;    // Player's current cent
+    uint32 obtain_bonus_time                                               = 6;
+    repeated ExtraInfo extra_fish_info                                     = 7;
+    int32 random_number                                                    = 8;
+}
+
+message ExtraInfo {
+    int32 win                                                              = 1;
+    int32 kind                                                             = 2;
+}
+
+message ResultCall {
+    common.proto.EMSGID msgid                                              = 1;
+    string token                                                           = 2;
+    string room_uuid                                                       = 3;    // The room where the player is currently located
+    int32 seat_id                                                          = 4;    // The player's current position
+    HitFish hit_fish                                                       = 5;
+    HitBullet hit_bullet                                                   = 6;
+}
+
+message ResultRecall {
+    common.proto.EMSGID msgid                                              = 1;
+    common.proto.Status.Code status_code                                   = 2;
+    string room_uuid                                                       = 3;    // The room where the player is currently located
+    int32 seat_id                                                          = 4;    // The player's current position
+    common.fish.proto.BetRateLine bet_rate_line                            = 5;
+    HitFish hit_fish                                                       = 6;
+    HitBullet hit_bullet                                                   = 7;
+    HitResult hit_result                                                   = 8;
+}
+
+message BroadcastResult {
+    common.proto.EMSGID msgid                                              = 1;
+    ResultRecall result_recall                                             = 2;
+}
+
+message OptionCall {
+    common.proto.EMSGID msgid                                              = 1;
+    repeated common.fish.proto.Point target                                = 2;   // Shooting point coordinates
+    int32 fish_symbol_id                                                   = 3;   // The Symbol ID of this special fish.
+    int32 total_pay                                                        = 4;   
+    string token                                                           = 5;
+    string room_uuid                                                       = 6;   
+    int32 seat_id                                                          = 7; 
+}
+
+message OptionRecall {
+    common.proto.EMSGID msgid                                              = 1;
+    repeated common.fish.proto.Point target                                = 2;   // Shooting point coordinates
+    common.proto.Status.Code status_code                                   = 3;
+    int32 fish_symbol_id                                                   = 4;
+    string room_uuid                                                       = 5;
+    int32 seat_id                                                          = 6;    
+    repeated ExtraInfo extra_fish_info                                     = 7;
+    int32 random_number                                                    = 8;
+}
+
+message BroadcastOption {
+    common.proto.EMSGID msgid                                              = 1;
+    OptionRecall option_recall                                             = 2;
+}

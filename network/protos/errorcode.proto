@@ -1,0 +1,15 @@
+syntax = "proto3";
+package errorcode.proto;
+import "common.proto";
+
+enum Level {
+    WARNING                         = 0;
+    ERROR                           = 1;
+    FATAL                           = 2;
+}
+
+message Error {
+    common.proto.EMSGID msgid       = 1;
+    Level level                     = 2;
+    string code                     = 3;
+}

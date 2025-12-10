@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Label, director, ProgressBar  } from 'cc';
+import { _decorator, Component, Node, Label, director, ProgressBar, tween, UIOpacity, EventTouch } from 'cc';
 import { App } from './App';
 import {CusHttp} from "./CusHttp";
 import {Connect} from "./ConnectConfig";
@@ -14,15 +14,23 @@ export class login extends Component {
     progressBar: ProgressBar = null;
     @property(Node)
     loadingLabel: Node = null;
+    @property(Node)
+    serverLabel: Node = null;
     private http = null;
     private dots = 0;
     private timer = 0;
-    private interval = 0.4; // 秒
+    private interval = 0.1; // 秒
+    public static instance: login;
     start() {
-
+        
     }
     
     onLoad(){
+        if (!login.instance) {
+            login.instance = this;
+        } else {
+            this.destroy();
+        }
         App.initLanguage(Data.Game.RES_LANGUAGE);
         App.init();
         this.progressBar.progress = 0;
@@ -37,12 +45,16 @@ export class login extends Component {
         if (this.timer >= this.interval) {
           this.timer = 0;
           this.dots = (this.dots + 1) % 4; // 0..3
-          this.loadingLabel.getComponent(Label).string = i18n.t('106001') + '.'.repeat(this.dots);
+          this.serverLabel.getComponent(Label).string = i18n.t('106002') + '.'.repeat(this.dots);
         }
     }
 
+    onDestroy () {
+        this.node.off(Node.EventType.TOUCH_END, this.onTouchEnd, this);
+    }
+
     preloadGameScene() {
-        director.preloadScene("game", 
+        director.preloadScene("lobby", 
             (completedCount, totalCount) => {
                 this.progressBar.progress = completedCount / totalCount;
                 console.log(`載入進度: ${completedCount}/${totalCount}`);
@@ -53,29 +65,47 @@ export class login extends Component {
                     return;
                 }
                 console.log("預載完成，準備切換！");
-                this.scheduleOnce(function(){//故意延遲3秒看loading畫面之後拿掉
-                   director.loadScene("game");
-                },3)
+                Data.Game.Loading_Compolete = true;
+                this.checkReady();
             }
         );
     }
 
-    login(){
-        let account = "jimmy123"
-        let password = "playstar123"
+    public checkReady(){//檢查進入大廳的proto資料跟資源有沒有都載入完成了
+        if(Data.Game.Loading_Compolete == true && Data.Game.Lobby_ProtoData_Compolete == true){
+            this.serverLabel.active = false;
+            this.loadingLabel.active = true;
+            let opacity = this.loadingLabel.getComponent(UIOpacity);
+            this.node.on(Node.EventType.TOUCH_END, this.onTouchEnd, this);
 
-        let url = Connect.serverURL.DEV + Connect.request.login.path;
-        let data = {
-            "Account": account,
-            "Password": password
-        };
-        this.http[Connect.request.login.method](url, this._onLogin, this, data);
+            tween(opacity)
+            .repeatForever(
+                tween().to(0.5, { opacity: 0 }).to(0.5, { opacity: 255 })
+            )
+            .start();
+        }
     }
 
-    _onLogin(data, obj) {
-        console.log("Login");
-        console.log(data);
-        console.log(obj);
+    onTouchEnd(event: EventTouch) {
+        director.loadScene("lobby");
     }
+    
+    // login(){
+    //     let account = "jimmy123"
+    //     let password = "playstar123"
+
+    //     let url = Connect.serverURL.DEV + Connect.request.login.path;
+    //     let data = {
+    //         "Account": account,
+    //         "Password": password
+    //     };
+    //     this.http[Connect.request.login.method](url, this._onLogin, this, data);
+    // }
+
+    // _onLogin(data, obj) {
+    //     console.log("Login");
+    //     console.log(data);
+    //     console.log(obj);
+    // }
 }
 

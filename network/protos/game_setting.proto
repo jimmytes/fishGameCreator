@@ -1,0 +1,48 @@
+syntax = "proto3";
+package game.setting.proto;
+
+import "common.proto";
+import "auth.proto";
+
+message StripsCall {
+    common.proto.EMSGID msgid               = 1;
+    string token                            = 2;
+}
+
+message StripsRecall {
+    message SymbolDef {
+        int32 symbol_id                          = 1;
+        repeated int32 pays                      = 2;
+    }
+    common.proto.EMSGID msgid                    = 1;
+    common.proto.Status.Code status_code         = 2;
+    repeated SymbolDef all_symbol_def            = 3;
+    string room_uuid                             = 4;
+}
+
+message ConfigCall {
+    common.proto.EMSGID msgid                    = 1;
+    string token                                 = 2;
+    string game_id                               = 3;
+    bool clear_power_cycle                       = 4;   // Whether to force clear the records
+    uint32 version                               = 5;   // proto version
+    uint32 game_version                          = 6;   // game version
+    uint32 subgame_id                            = 7;
+}
+
+message ConfigRecall {
+    message Bets {
+        repeated uint32 bet                      = 1;   // Bets for each turret stage
+    }
+    common.proto.EMSGID msgid                    = 1;
+    common.proto.Status.Code status_code         = 2;
+    string room_uuid                             = 3;
+    repeated Bets levels                         = 4;   // N-stage turret
+    repeated uint32 line                         = 5;   // Currently all are 1
+    repeated uint32 rates                        = 6;   // Hall room rates
+    uint32 rates_default_index                   = 7;
+    repeated string languages                    = 8;
+    uint32 languages_default_index               = 9;
+    auth.proto.UserInfo player_info              = 10;
+    uint32 next_scene                            = 11;   // Fish scene
+}

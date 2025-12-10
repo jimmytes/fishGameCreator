@@ -1,0 +1,160 @@
+
+godlike_lobby_desktop.png
+size: 979,979
+format: RGBA4444
+filter: Linear,Linear
+repeat: none
+fl0003
+  rotate: false
+  xy: 810, 96
+  size: 128, 127
+  orig: 149, 149
+  offset: 10, 11
+  index: -1
+fl0006
+  rotate: true
+  xy: 354, 409
+  size: 52, 54
+  orig: 57, 59
+  offset: 2, 3
+  index: -1
+fl0012
+  rotate: false
+  xy: 266, 601
+  size: 54, 54
+  orig: 60, 60
+  offset: 3, 3
+  index: -1
+godlike/coin1
+  rotate: true
+  xy: 331, 581
+  size: 74, 80
+  orig: 80, 87
+  offset: 2, 4
+  index: -1
+godlike/drag_back_fur
+  rotate: false
+  xy: 266, 463
+  size: 145, 116
+  orig: 151, 123
+  offset: 3, 3
+  index: -1
+godlike/drag_body
+  rotate: false
+  xy: 331, 90
+  size: 255, 256
+  orig: 255, 262
+  offset: 0, 0
+  index: -1
+godlike/drag_hand_L
+  rotate: false
+  xy: 784, 830
+  size: 189, 147
+  orig: 189, 147
+  offset: 0, 0
+  index: -1
+godlike/drag_hand_R
+  rotate: false
+  xy: 266, 350
+  size: 86, 111
+  orig: 93, 118
+  offset: 4, 4
+  index: -1
+godlike/drag_hand_fur_R
+  rotate: false
+  xy: 589, 209
+  size: 170, 161
+  orig: 170, 161
+  offset: 0, 0
+  index: -1
+godlike/drag_head
+  rotate: false
+  xy: 2, 657
+  size: 409, 320
+  orig: 409, 320
+  offset: 0, 0
+  index: -1
+godlike/drag_head_fur
+  rotate: true
+  xy: 2, 360
+  size: 295, 262
+  orig: 295, 262
+  offset: 0, 0
+  index: -1
+godlike/drag_whiskers_L
+  rotate: false
+  xy: 761, 225
+  size: 216, 121
+  orig: 216, 121
+  offset: 0, 0
+  index: -1
+godlike/drag_whiskers_R
+  rotate: false
+  xy: 413, 885
+  size: 369, 92
+  orig: 369, 92
+  offset: 0, 0
+  index: -1
+godlike/godlike_badge
+  rotate: true
+  xy: 780, 348
+  size: 303, 175
+  orig: 303, 175
+  offset: 0, 0
+  index: -1
+godlike/godlike_badge_shine1
+  rotate: false
+  xy: 708, 58
+  size: 100, 149
+  orig: 231, 160
+  offset: 0, 4
+  index: -1
+godlike/godlike_badge_shine2
+  rotate: true
+  xy: 589, 372
+  size: 163, 174
+  orig: 172, 175
+  offset: 0, 0
+  index: -1
+godlike/godlike_badge_shine3
+  rotate: false
+  xy: 780, 653
+  size: 183, 175
+  orig: 193, 175
+  offset: 5, 0
+  index: -1
+godlike/godlike_badge_shine4
+  rotate: false
+  xy: 413, 360
+  size: 174, 175
+  orig: 186, 175
+  offset: 7, 0
+  index: -1
+godlike/godlike_badge_shine5
+  rotate: false
+  xy: 588, 52
+  size: 118, 155
+  orig: 125, 159
+  offset: 6, 3
+  index: -1
+godlike/godlike_badge_shine6
+  rotate: true
+  xy: 331, 20
+  size: 68, 133
+  orig: 76, 138
+  offset: 8, 4
+  index: -1
+godlike/godlike_frame_bg
+  rotate: true
+  xy: 413, 537
+  size: 346, 365
+  orig: 372, 372
+  offset: 4, 4
+  index: -1
+godlike/godlike_gold_frame
+  rotate: true
+  xy: 2, 18
+  size: 328, 327
+  orig: 333, 332
+  offset: 2, 3
+  index: -1

@@ -1,0 +1,20 @@
+
+lobby_text_en.png
+size: 153,70
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+text/expert_en
+  rotate: false
+  xy: 2, 2
+  size: 148, 31
+  orig: 153, 36
+  offset: 2, 3
+  index: -1
+text/junior_en
+  rotate: false
+  xy: 2, 35
+  size: 149, 33
+  orig: 154, 38
+  offset: 2, 3
+  index: -1

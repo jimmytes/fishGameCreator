@@ -1,0 +1,25 @@
+syntax = "proto3";
+package broadcaster.proto;
+import "common.proto";
+
+enum BROADCASTER_TYPE {
+    BIG_WIN                                       = 0;
+    BONUS_WIN                                     = 1;
+    SHUTDOWN                                      = 2;
+}
+
+enum DELIVER_TYPE {
+    LOBBY                                         = 0;
+    GAME                                          = 1;
+}
+
+message Broadcaster {
+    common.proto.EMSGID msgid                     = 1;
+    DELIVER_TYPE     dv_type                      = 2; // Message dispatch types
+    BROADCASTER_TYPE bc_type                      = 3; // Message type
+    string game_id                                = 4; // Which game
+    uint32 subgame_id                             = 5; // Which room
+    string member_id                              = 6;
+    string message                                = 7; // Marquee information
+    uint32 time                                   = 8; // Marquee display time (unit: seconds)
+}

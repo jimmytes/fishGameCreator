@@ -1,0 +1,73 @@
+syntax = "proto3";
+package fish.proto;
+
+import "common_fish.proto";
+
+message RoundStart {
+    common.fish.proto.EMSGID msgid                                         = 1;
+    string room_uuid                                                       = 2;
+}
+
+message RoundEnd {
+    common.fish.proto.EMSGID msgid                                         = 1;
+    string room_uuid                                                       = 2;
+    int32 next_scene                                                       = 3;
+}
+
+message BossComing {
+    common.fish.proto.EMSGID msgid                                         = 1;
+    string room_uuid                                                       = 2;
+}
+
+message BroadcastFishIn {
+    common.fish.proto.EMSGID msgid                                         = 1;
+    string room_uuid                                                       = 2;    // Room ID (unique identifier)
+    FishInfo fish                                                          = 3;
+}
+
+message BroadcastFishOut {
+    common.fish.proto.EMSGID msgid                                         = 1;
+    string room_uuid                                                       = 2;    // Room ID (unique identifier)
+    string uuid                                                            = 3;    // Fish ID (unique identifier)
+    int32 type                                                             = 4;    // Disappearance method 0:Disappear directly 1:Fish dies
+}
+
+message BroadcastGroupIn {
+    common.fish.proto.EMSGID msgid                                         = 1;
+    string room_uuid                                                       = 2;    // Room ID (unique identifier)
+    repeated FishInfo group_fish                                           = 3;
+}
+
+message AllFishCall {
+    common.fish.proto.EMSGID msgid                                         = 1;
+    string room_uuid                                                       = 2;    // Room ID (unique identifier)
+}
+
+message AllFishRecall {
+    common.fish.proto.EMSGID msgid                                         = 1;
+    string room_uuid                                                       = 2;    // Room ID (unique identifier)
+    repeated FishInfo all_fish                                             = 3;
+}
+
+message FishInfo {
+    string uuid                                                            = 1;    // Fish ID (unique identifier)
+    int32 symbol_id                                                        = 2;    // Fish type ID(symbol id)
+    string fish_type                                                       = 3;
+    int32 fish_life                                                        = 4;    // Total swimming time
+    int64 elapsed_time                                                     = 5;    // Elapsed time (in seconds) (Calculated by the server using UTC)
+    string fish_path                                                       = 6;
+    double fish_speed                                                       = 7;
+    GroupInfo group                                                        = 8;
+}
+
+message BroadcastFishChange {
+    common.fish.proto.EMSGID msgid                                         = 1;
+    string room_uuid                                                       = 2;    // Room ID (unique identifier)
+    string uuid                                                            = 3;    // Fish ID (unique identifier)
+    int32 symbol_id                                                        = 4;    // Fish type ID(symbol id)
+}
+message GroupInfo {
+    string uuid                                                            = 1;   // School of fish ID (unique identifier)
+    int32 group_number                                                     = 2;
+    string group_shape                                                     = 3;
+}

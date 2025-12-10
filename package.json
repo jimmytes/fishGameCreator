@@ -3,5 +3,9 @@
   "uuid": "0c585ccb-75b4-4aec-b1bc-2a71ff2c4767",
   "creator": {
     "version": "3.7.2"
+  },
+  "dependencies": {
+    "@protobuf-ts/plugin": "^2.11.1",
+    "protobufjs": "^7.5.4"
   }
 }

@@ -16,7 +16,9 @@ export const languages = {
     "105003":"Please rotate your device to landscape mode",
     
     //login
-    "106001":"loading"
+    "106001":"Touch to start!",
+    "106002":"Connecting Server"
+
 };
 
 if (!win.languages) {

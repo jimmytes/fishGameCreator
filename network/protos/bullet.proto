@@ -1,0 +1,42 @@
+syntax = "proto3";
+package bullet.proto;
+
+import "common_fish.proto";
+
+message ExtraData {
+    common.fish.proto.Point target                                         = 1;   // Shooting point coordinates
+    int32 shoot_mode                                                       = 2;   // Firing mode 0:Normal 1:Auto 2:Target
+    int32 muzzle_idx                                                       = 3;   // Muzzle illustration
+    repeated string lock_obj_uuid                                          = 4;   // Laser-locked fish UUID
+}
+
+message Shoot {
+    common.fish.proto.EMSGID msgid                                         = 1;
+    string token                                                           = 2;
+    string room_uuid                                                       = 3;    // The room where the player is currently located
+    int32 seat_id                                                          = 4;
+    string bullet_uuid                                                     = 5;    // Bullet ID (unique identifier)
+    int32 bullet_type_id                                                   = 6;    // Bullet type 0: Normal bullet, 1: Free bullet
+    common.fish.proto.BetRateLine bet_rate_line                            = 7;
+    ExtraData extra_data                                                   = 8;
+}
+
+message BroadcastShoot {
+    common.fish.proto.EMSGID msgid                                         = 1;
+    Shoot shoot                                                            = 2;
+    uint64 player_cent                                                     = 3;    // Player's current score
+}
+
+message BetChange {
+    common.fish.proto.EMSGID msgid                                         = 1;
+    string room_uuid                                                       = 2;    // The room where the player is currently located
+    int32 seat_id                                                          = 3;
+    int32 bullet_type_id                                                   = 4;    // Bullet type 0:Normal bullet, 1: Free bullet
+    common.fish.proto.BetRateLine bet_rate_line                            = 5;
+    int32 shoot_mode                                                       = 6;    // Firing mode 0:Normal 1:Auto 2:Target
+}
+
+message BroadcastBetChange {
+    common.fish.proto.EMSGID msgid                                         = 1;
+    BetChange bet_change                                                   = 2;
+}
